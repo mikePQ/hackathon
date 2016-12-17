@@ -135,7 +135,7 @@ public class PlayerController
         videoIdLabel.setText(videoIdBase + " : " + result.getVideoId());
         titleLabel.setText(titleBase + " : " + result.getTitle());
         authorLabel.setText(authorBase + " : " + result.getAuthor());
-        dateLabel.setText(dateBase + " : " + formatDate(result.getPublishingDate()));
+        dateLabel.setText(dateBase + " : " + result.getPublishingDate());
         time = new SimpleStringProperty();
         time.setValue(formatTime(mediaPlayer.getCurrentTime(), duration));
         timeLabel.textProperty().bind(time);

@@ -96,11 +96,6 @@ public class LocalDiskCache
         fileRenamed.renameTo(fileToRename);
     }
 
-    public static void main(String[] args)
-    {
-
-    }
-
     static class JsonMaker
     {
         private final static String videoId = "videoId";
@@ -113,12 +108,25 @@ public class LocalDiskCache
 
         public static void createJsonFile(QueryResult queryResult)
         {
-            Gson gson = new Gson();
-            try (FileWriter writer = new FileWriter(queryResult.getVideoId())) {
+            try (FileWriter writer = new FileWriter(ldcPATH + pathSeperator + queryResult.getVideoId())) {
+                Gson gson = new GsonBuilder().create();
                 gson.toJson(queryResult, writer);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        public static QueryResult getQueryResultFromJson(String videoID)
+        {
+            QueryResult queryResult = null;
+            try (Reader reader = new FileReader(ldcPATH + pathSeperator + videoID)) {
+                Gson gson = new GsonBuilder().create();
+                queryResult = gson.fromJson(reader, QueryResult.class);
+                return queryResult;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return queryResult;
         }
     }
 }

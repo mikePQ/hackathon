@@ -10,17 +10,19 @@ public class QueryResult {
 		this.videoId = videoId;
 		this.title = title;
 		this.author = author;
-		this.publishingDate = publishingDate;
+		this.publishingDate = publishingDate.toString();
 		this.miniature = miniature;
 		this.fileUrl = fileUrl;
 	}
+	public QueryResult(){
+   };
 
 	private String videoId;
 	private String title;
 	private String author;
-	private Date publishingDate;
-	private Image miniature;
-	private String fileUrl;
+	private String publishingDate;
+	private transient Image miniature;
+	private transient String fileUrl;
 
 	public String getVideoId() {
 		return videoId;
@@ -34,7 +36,7 @@ public class QueryResult {
 		return author;
 	}
 
-	public Date getPublishingDate() {
+	public String getPublishingDate() {
 		return publishingDate;
 	}
 
