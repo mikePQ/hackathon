@@ -3,14 +3,17 @@ package org.cos.sie.popsulo;
 import com.github.axet.vget.VGet;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.cos.sie.popsulo.app.QueryResult;
 import org.cos.sie.popsulo.converter.FormatConverter;
 import org.cos.sie.popsulo.converter.OutputFormat;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.Date;
 
 /**
  * Created by Karol on 2016-12-17.
@@ -40,20 +43,21 @@ public class LocalDiskCache
         return instance;
     }
 
-    public void cacheQueryResult(SearchResult queryResult)
+    public void cacheQueryResult(QueryResult queryResult)
     {
-        final String videoID = queryResult.getId().getVideoId();
-        final String pathToResultCacheDir = ldcPATH + pathSeperator + videoID;
+        final String videoID = queryResult.getVideoId();
+        final String pathToResultCache = ldcPATH + pathSeperator + videoID;
 
-        boolean isFileCached = saveVideo(queryResult, pathToResultCacheDir, videoID);
+        boolean isFileCached = saveVideo(queryResult, pathToResultCache, videoID);
 
-        if (true)
+        if (isFileCached)
             return;
 
-        convertCacheToMp3(queryResult, pathToResultCacheDir);
+        convertCacheToMp3(queryResult, pathToResultCache);
+        JsonMaker.createJsonFile(queryResult);
     }
 
-    private void convertCacheToMp3(SearchResult queryResult, String pathToResultCacheDir)
+    private void convertCacheToMp3(QueryResult queryResult, String pathToResultCache)
     {
         FormatConverter formatConverter = null;
         try {
@@ -62,12 +66,11 @@ public class LocalDiskCache
             e.printStackTrace();
         }
         assert formatConverter != null;
-        final String pathToCachedVid = pathToResultCacheDir + pathSeperator +
-            queryResult.getSnippet().getTitle();
-        formatConverter.convertCachedResult(pathToCachedVid);
+        formatConverter.convertCachedResult(pathToResultCache);
+
     }
 
-    private static boolean saveVideo(SearchResult queryResult, String path, String videoID)
+    private static boolean saveVideo(QueryResult queryResult, String path, String videoID)
     {
         final String url = urlConstPart + videoID;
         File videoFile = new File(path);
@@ -81,16 +84,41 @@ public class LocalDiskCache
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        appendHashToTitle(queryResult.getSnippet().getTitle(), videoID);
+        changeNameToHash(queryResult.getTitle(), videoID);
         //Video was not cached before, we need to process it
         return false;
     }
 
-    private static void appendHashToTitle(String title, String videoID)
+    private static void changeNameToHash(String title, String videoID)
     {
-        File fileRenamed = new File(ldcPATH + pathSeperator + title);
-        File fileToRename = new File(ldcPATH + pathSeperator + title + videoID);
-        assert (fileToRename.exists());
+        File fileRenamed = new File(ldcPATH + pathSeperator + title + ".mp4");
+        File fileToRename = new File(ldcPATH + pathSeperator + videoID + ".mp4");
         fileRenamed.renameTo(fileToRename);
+    }
+
+    public static void main(String[] args)
+    {
+
+    }
+
+    static class JsonMaker
+    {
+        private final static String videoId = "videoId";
+
+        private final static String title = "title";
+
+        private final static String author = "author";
+
+        private final static String publishingDate = "publishingDate";
+
+        public static void createJsonFile(QueryResult queryResult)
+        {
+            Gson gson = new Gson();
+            try (FileWriter writer = new FileWriter(queryResult.getVideoId())) {
+                gson.toJson(queryResult, writer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
