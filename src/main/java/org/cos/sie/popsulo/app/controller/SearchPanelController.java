@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import org.cos.sie.popsulo.app.QueryResult;
+import org.cos.sie.popsulo.app.utils.timer.TimerService;
 import org.cos.sie.popsulo.youtubeSearch.SearchQueryService;
 import org.cos.sie.popsulo.youtubeSearch.impl.DefaultSearchQueryService;
 import org.cos.sie.popsulo.youtubeSearch.mocks.SearchQueryServiceMock;
@@ -42,7 +43,7 @@ public class SearchPanelController {
 	@SuppressWarnings("unused")
 	private void initialize() {
 		searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if ( ! Objects.equals(oldValue, newValue) ) {
+			if ( !Objects.equals(oldValue, newValue) ) {
 				updateQueries(newValue);
 			}
 		});
@@ -70,16 +71,17 @@ public class SearchPanelController {
 
 	private void updateQueries(String newValue) {
 		logger.info("Querying youtube requested");
-		List<QueryResult> youtubeResult;
-		try {
-			youtubeResult = queryService.queryYoutube(newValue);
-		} catch ( IOException exc ) {
-			logger.error("Failed to contact youtube webservice due to: " + exc.getMessage(), exc);
-			new Alert(Alert.AlertType.ERROR, "Failed to contact youtube", ButtonType.OK).showAndWait();
-			return;
-		}
+
+		TimerService.getTimerService().executeQuery(queryService,
+				() -> searchTextField.getText(),
+				this::updateResultList,
+				() -> new Alert(Alert.AlertType.ERROR, "Failed to contact youtube", ButtonType.OK).showAndWait());
+
+	}
+
+	private void updateResultList(List<QueryResult> results) {
 		currentResults.clear();
 		logger.debug("Query succeded");
-		currentResults.addAll(FXCollections.observableList(youtubeResult));
+		currentResults.addAll(FXCollections.observableList(results));
 	}
 }
