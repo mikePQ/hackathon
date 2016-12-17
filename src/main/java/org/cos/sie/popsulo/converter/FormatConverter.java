@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class FormatConverter
 {
@@ -25,15 +27,25 @@ public class FormatConverter
         this.ffprobe = new FFprobe("ffprobe");
     }
 
-    public boolean convert(File inputFile, File outputFile, OutputFormat outputFormat)
+    public void convertCachedResult(String pathToCachedVid)
+    {
+        final String cachedMP4 = pathToCachedVid + ".mp4";
+        convert(cachedMP4, pathToCachedVid + ".mp3", OutputFormat.MP3);
+        try {
+            Files.delete(Paths.get(cachedMP4));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean convert(String inputFile, String outputFile, OutputFormat outputFormat)
     {
         try {
-            FFmpegProbeResult inputProbeResult = ffprobe.probe(inputFile.getAbsolutePath());
-            String sOutputPath = outputFile.getAbsolutePath();
+            FFmpegProbeResult inputProbeResult = ffprobe.probe(inputFile);
             FFmpegBuilder builder = new FFmpegBuilder()
                 .setInput(inputProbeResult)
                 .overrideOutputFiles(true)
-                .addOutput(sOutputPath)
+                .addOutput(outputFile)
                 .setFormat(outputFormat.toString())
                 .setStrict(FFmpegBuilder.Strict.EXPERIMENTAL)
                 .done();

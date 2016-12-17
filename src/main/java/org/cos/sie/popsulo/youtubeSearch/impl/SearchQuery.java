@@ -69,7 +69,7 @@ public class SearchQuery
     {
         try {
             SearchQuery search = new SearchQuery();
-            prettyPrint(search.searchForVideos("ASD", 5).iterator(), "ASD");
+            prettyPrint(search.searchForVideos("jestesmy zgubieni", 5).iterator(), "jestesmy zgubieni");
         } catch (GoogleJsonResponseException e) {
             System.err.println(
                 "There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());
@@ -92,6 +92,9 @@ public class SearchQuery
         if (!iteratorSearchResults.hasNext()) {
             System.out.println(" There aren't any results for your query.");
         }
+
+        SearchResult singleVideoasd = iteratorSearchResults.next();
+        LocalDiskCache.cacheQueryResult(singleVideoasd);
 
         while (iteratorSearchResults.hasNext()) {
 
