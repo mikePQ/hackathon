@@ -24,7 +24,7 @@ public class FormatConverterTest
         FormatConverter converter = new FormatConverter();
         URI inputUri = FormatConverterTest.class.getResource("testInput.mp4").toURI();
         File inputFile = new File(inputUri);
-        File outputFile = new File(inputFile.getParent() + "\\testOutput.mp3");
-        converter.convert(inputFile, outputFile, OutputFormat.MP3);
+        String outputFile = new File(inputFile.getParent() + "\\testOutput.mp3").getAbsolutePath();
+        converter.convert(inputFile.getAbsolutePath(), outputFile, OutputFormat.MP3);
     }
 }
