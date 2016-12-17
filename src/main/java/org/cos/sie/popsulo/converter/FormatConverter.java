@@ -13,6 +13,8 @@ import java.io.IOException;
 
 public class FormatConverter
 {
+    private static final Logger logger = LoggerFactory.getLogger(FormatConverter.class);
+
     private final FFmpeg ffmpeg;
     private final FFprobe ffprobe;
 
@@ -46,29 +48,14 @@ public class FormatConverter
         return false;
     }
 
-    public static void main(String[] args)
-        throws IOException
+    // getters for testing purposes
+    FFmpeg getFfmpeg()
     {
-        String sInputPath = "D:\\youtube\\Jesteśmy zgubieni.mp4";
-        String sOutputPath = "D:\\youtube\\mp3\\2.mp3";
-        FormatConverter converter = new FormatConverter();
-        converter.convert(new File(sInputPath), new File(sOutputPath), OutputFormat.MP3);
+        return ffmpeg;
     }
 
-    public enum OutputFormat
+    FFprobe getFfprobe()
     {
-        MP3("mp3"), MP4("mp4");
-
-        private final String id;
-        OutputFormat(String id)
-        {
-            this.id = id;
-        }
-
-        @Override public String toString()
-        {
-            return id;
-        }
+        return ffprobe;
     }
-    private static final Logger logger = LoggerFactory.getLogger(FormatConverter.class);
 }
