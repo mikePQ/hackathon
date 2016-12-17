@@ -58,5 +58,11 @@
             <artifactId>commons-lang3</artifactId>
             <version>${commons.lang.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.axet</groupId>
+            <artifactId>vget</artifactId>
+            <version>1.2.4</version>
+        </dependency>
     </dependencies>
 </project>
