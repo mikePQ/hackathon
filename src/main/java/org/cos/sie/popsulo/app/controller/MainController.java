@@ -14,6 +14,7 @@ import org.cos.sie.popsulo.mocks.SearchQueryServiceMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Objects;
 
 public class MainController {
@@ -28,7 +29,7 @@ public class MainController {
 	private TableView<QueryResult> results;
 
 	@FXML
-	private ObservableList<QueryResult> currentResults;
+	private ObservableList<QueryResult> currentResults = FXCollections.observableArrayList();
 
 	@FXML
 	private TableColumn<QueryResult, String> title;
@@ -58,12 +59,9 @@ public class MainController {
 
 	private void updateQueries(String newValue) {
 		logger.info("Querying youtube requested");
-		currentResults = FXCollections.observableList(queryService.queryYoutube(newValue));
-	}
-
-	@FXML
-	public void onButtonClicked(MouseEvent event) {
-
+		currentResults.clear();
+		List<QueryResult> youtubeResult = queryService.queryYoutube(newValue);
+		currentResults.addAll(FXCollections.observableList(youtubeResult));
 	}
 
 	@FXML
