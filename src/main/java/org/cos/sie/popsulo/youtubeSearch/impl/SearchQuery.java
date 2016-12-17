@@ -9,6 +9,7 @@ import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Thumbnail;
 import org.cos.sie.popsulo.Auth;
+import org.cos.sie.popsulo.LocalDiskCache;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -94,7 +95,7 @@ public class SearchQuery
         }
 
         SearchResult singleVideoasd = iteratorSearchResults.next();
-        LocalDiskCache.cacheQueryResult(singleVideoasd);
+        LocalDiskCache.getInstance().cacheQueryResult(singleVideoasd);
 
         while (iteratorSearchResults.hasNext()) {
 
@@ -107,8 +108,8 @@ public class SearchQuery
                 Thumbnail thumbnail = singleVideo.getSnippet().getThumbnails().getDefault();
 
                 System.out.println(
-                    " Video Id" + rId.getVideoId() + " Title: " + singleVideo.getSnippet().getTitle() + "Channel "
-                        + singleVideo.getSnippet().getChannelTitle() + " Date"
+                    " Video Id" + rId.getVideoId() + " Title: " + singleVideo.getSnippet().getTitle()
+                        + "Channel " + singleVideo.getSnippet().getChannelTitle() + " Date"
                         + singleVideo.getSnippet().getPublishedAt());
             }
         }
