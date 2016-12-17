@@ -1,4 +1,4 @@
-package org.cos.sie.popsulo;
+package org.cos.sie.popsulo.youtubeSearch.impl;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
@@ -8,6 +8,7 @@ import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Thumbnail;
+import org.cos.sie.popsulo.Auth;
 
 import java.io.IOException;
 import java.util.Iterator;

@@ -106,9 +106,6 @@
             <artifactId>google-oauth-client-jetty</artifactId>
             <version>1.22.0</version>
         </dependency>
-
-
-
     </dependencies>
 
     <build>
@@ -149,6 +146,7 @@
                 <configuration>
                     <archive>
                         <manifest>
+                            <!--<mainClass>org.jboss.weld.environment.se.StartMain</mainClass>-->
                             <mainClass>org.cos.sie.popsulo.app.StartupClass</mainClass>
                         </manifest>
                     </archive>
