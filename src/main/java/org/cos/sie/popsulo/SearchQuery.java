@@ -1,19 +1,4 @@
 package org.cos.sie.popsulo;
-
-/*
- * Copyright (c) 2012 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- */
-
     import com.google.api.client.googleapis.json.GoogleJsonResponseException;
     import com.google.api.client.http.HttpRequest;
     import com.google.api.client.http.HttpRequestInitializer;
@@ -36,84 +21,45 @@ package org.cos.sie.popsulo;
     import java.util.List;
     import java.util.Properties;
 
-/**
- * Print a list of videos matching a search term.
- *
- * @author Jeremy Walker
- */
 public class SearchQuery
 {
-
-    /**
-     * Define a global variable that identifies the name of a file that
-     * contains the developer's API key.
-     */
     private static final String PROPERTIES_FILENAME = "Key.properties";
-
-    private static final long NUMBER_OF_VIDEOS_RETURNED = 25;
-
-    /**
-     * Define a global instance of a Youtube object, which will be used
-     * to make YouTube Data API requests.
-     */
     private static YouTube youtube;
+    private YouTube.Search.List search;
 
-    /**
-     * Initialize a YouTube object to search for videos on YouTube. Then
-     * display the name and thumbnail image of each video in the result set.
-     *
-     * @param args command line args.
-     */
-    public static void main(String[] args)
+    private static String retrivedFields = "items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)";
+    private static final String fileName = "YouTubeCache";
+    private static final String searchedObjectType = "video";
+    private final String apiKey = "AIzaSyBnfhEl2amzE41PfLOkQFe4WxvkrDlgtbY";
+
+    public SearchQuery()
     {
-        /*// Read the developer key from the properties file.
-        Properties properties = new Properties();
-        try {
-            URL url = SearchQuery.class.getResource(PROPERTIES_FILENAME);
-            InputStream in = SearchQuery.class.getResourceAsStream(PROPERTIES_FILENAME);
-            properties.load(in);
-
-        } catch (IOException e) {
-            System.err.println("There was an error reading " + PROPERTIES_FILENAME + ": " + e.getCause() + " : " + e.getMessage());
-            System.exit(1);
-        }*/
-
-        try {
-            // This object is used to make YouTube Data API requests. The last
-            // argument is required, but since we don't need anything
-            // initialized when the HttpRequest is initialized, we override
-            // the interface and provide a no-op function.
-            youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT, Auth.JSON_FACTORY, new HttpRequestInitializer()
+        youtube = new YouTube.Builder(Auth.HTTP_TRANSPORT, Auth.JSON_FACTORY, new HttpRequestInitializer()
+        {
+            public void initialize(HttpRequest request)
+                throws IOException
             {
-                public void initialize(HttpRequest request)
-                    throws IOException
-                {
-                }
-            }).setApplicationName("youtube-cmdline-search-sample").build();
+                //nothing happens when request is initalized
+            }
+        }).setApplicationName(fileName).build();
 
-            // Prompt the user to enter a query term.
-            String queryTerm = getInputQuery();
+        try {
+        search = youtube.search().list("id,snippet");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        search.setKey(apiKey);
+        search.setType(searchedObjectType);
+        search.setFields(retrivedFields);
+    }
 
-            // Define the API request for retrieving search results.
-            YouTube.Search.List search = youtube.search().list("id,snippet");
-
-            // Set your developer key from the {{ Google Cloud Console }} for
-            // non-authenticated requests. See:
-            // {{ https://cloud.google.com/console }}
-            String apiKey = "AIzaSyBnfhEl2amzE41PfLOkQFe4WxvkrDlgtbY";
-            search.setKey(apiKey);
-            search.setQ(queryTerm);
-
-            // Restrict the search results to only include videos. See:
-            // https://developers.google.com/youtube/v3/docs/search/list#type
-            search.setType("video");
-
-            // To increase efficiency, only retrieve the fields that the
-            // application uses.
-            search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
-            search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
-
+    public void searchForVideos(String queryTerm, long numberOfVideos)
+    {
+        try {
             // Call the API and print results.
+            search.setMaxResults(numberOfVideos);
+            search.setQ(queryTerm);
             SearchListResponse searchResponse = search.execute();
             List<SearchResult> searchResultList = searchResponse.getItems();
             if (searchResultList != null) {
@@ -128,40 +74,21 @@ public class SearchQuery
         }
     }
 
-    /*
-     * Prompt the user to enter a query term and return the user-specified term.
-     */
-    private static String getInputQuery()
-        throws IOException
+    public static void main(String[] args)
     {
-
-        String inputQuery = "";
-
-        System.out.print("Please enter a search term: ");
-        BufferedReader bReader = new BufferedReader(new InputStreamReader(System.in));
-        inputQuery = bReader.readLine();
-
-        if (inputQuery.length() < 1) {
-            // Use the string "YouTube Developers Live" as a default.
-            inputQuery = "YouTube Developers Live";
-        }
-        return inputQuery;
+        SearchQuery search = new SearchQuery();
+        search.searchForVideos("ASD", 5);
+        search.searchForVideos("KUPA", 10);
     }
 
     /*
-     * Prints out all results in the Iterator. For each result, print the
-     * title, video ID, and thumbnail.
-     *
-     * @param iteratorSearchResults Iterator of SearchResults to print
-     *
-     * @param query Search query (String)
+     * Do debugowania, pozniej WYPIERDOL
      */
+
     private static void prettyPrint(Iterator<SearchResult> iteratorSearchResults, String query)
     {
 
-        System.out.println("\n=============================================================");
-        System.out.println("   First " + NUMBER_OF_VIDEOS_RETURNED + " videos for search on \"" + query + "\".");
-        System.out.println("=============================================================\n");
+        System.out.println("Videos for search on \"" + query + "\".");
 
         if (!iteratorSearchResults.hasNext()) {
             System.out.println(" There aren't any results for your query.");
@@ -177,10 +104,7 @@ public class SearchQuery
             if (rId.getKind().equals("youtube#video")) {
                 Thumbnail thumbnail = singleVideo.getSnippet().getThumbnails().getDefault();
 
-                System.out.println(" Video Id" + rId.getVideoId());
-                System.out.println(" Title: " + singleVideo.getSnippet().getTitle());
-                System.out.println(" Thumbnail: " + thumbnail.getUrl());
-                System.out.println("\n-------------------------------------------------------------\n");
+                System.out.println(" Video Id" + rId.getVideoId() + " Title: " + singleVideo.getSnippet().getTitle());
             }
         }
     }
