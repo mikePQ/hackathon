@@ -64,5 +64,12 @@
             <artifactId>vget</artifactId>
             <version>1.2.4</version>
         </dependency>
+
+        <!-- ffmpeg java wrapper -->
+        <dependency>
+            <groupId>net.bramp.ffmpeg</groupId>
+            <artifactId>ffmpeg</artifactId>
+            <version>0.6.1</version>
+        </dependency>
     </dependencies>
 </project>
