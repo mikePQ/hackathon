@@ -8,7 +8,6 @@
     <Loggers>
         <Root level="ALL">
             <AppenderRef ref="Console" level="ALL"/>
-            <AppenderRef ref="File" level="OFF"/>
         </Root>
     </Loggers>
 </Configuration>
