@@ -66,7 +66,7 @@ public class SearchQuery
      */
     public static void main(String[] args)
     {
-        // Read the developer key from the properties file.
+        /*// Read the developer key from the properties file.
         Properties properties = new Properties();
         try {
             URL url = SearchQuery.class.getResource(PROPERTIES_FILENAME);
@@ -76,7 +76,7 @@ public class SearchQuery
         } catch (IOException e) {
             System.err.println("There was an error reading " + PROPERTIES_FILENAME + ": " + e.getCause() + " : " + e.getMessage());
             System.exit(1);
-        }
+        }*/
 
         try {
             // This object is used to make YouTube Data API requests. The last
@@ -100,7 +100,7 @@ public class SearchQuery
             // Set your developer key from the {{ Google Cloud Console }} for
             // non-authenticated requests. See:
             // {{ https://cloud.google.com/console }}
-            String apiKey = properties.getProperty("youtube.apikey");
+            String apiKey = "AIzaSyBnfhEl2amzE41PfLOkQFe4WxvkrDlgtbY";
             search.setKey(apiKey);
             search.setQ(queryTerm);
 
