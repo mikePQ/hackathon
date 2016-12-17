@@ -23,14 +23,13 @@ package org.cos.sie.popsulo;
 
 public class SearchQuery
 {
-    private static final String PROPERTIES_FILENAME = "Key.properties";
-    private static YouTube youtube;
+    private YouTube youtube;
     private YouTube.Search.List search;
 
-    private static String retrivedFields = "items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)";
+    private final static String retrivedFields = "items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)";
     private static final String fileName = "YouTubeCache";
     private static final String searchedObjectType = "video";
-    private final String apiKey = "AIzaSyBnfhEl2amzE41PfLOkQFe4WxvkrDlgtbY";
+    private final static String apiKey = "AIzaSyBnfhEl2amzE41PfLOkQFe4WxvkrDlgtbY";
 
     public SearchQuery()
     {
