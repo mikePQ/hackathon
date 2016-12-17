@@ -44,7 +44,7 @@ public class DefaultSearchQueryService implements SearchQueryService {
 		String channel = searchResult.getSnippet().getChannelTitle();
 		Date publishedDate = new Date(searchResult.getSnippet().getPublishedAt().getValue());
 
-		return new QueryResult(videoId, title, channel, publishedDate);
+		return new QueryResult(videoId, title, channel, publishedDate, null, null);
 	}
 
 }

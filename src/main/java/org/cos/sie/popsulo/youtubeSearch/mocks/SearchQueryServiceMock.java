@@ -14,11 +14,11 @@ public class SearchQueryServiceMock implements SearchQueryService {
 	private static final List<QueryResult> exampleQueryResults = new ArrayList<>();
 
 	static {
-		exampleQueryResults.add(new QueryResult("1","asdf", "ziutek", new Date()));
-		exampleQueryResults.add(new QueryResult("2", "koty", "janusz", new Date()));
-		exampleQueryResults.add(new QueryResult("3","koteczki", "janusz", new Date()));
-		exampleQueryResults.add(new QueryResult("4","kotełki", "kazik", new Date()));
-		exampleQueryResults.add(new QueryResult("5", "heheszki", "ziutek", new Date()));
+		exampleQueryResults.add(new QueryResult("1","asdf", "ziutek", new Date(), null, null));
+		exampleQueryResults.add(new QueryResult("2", "koty", "janusz", new Date(), null, null));
+		exampleQueryResults.add(new QueryResult("3","koteczki", "janusz", new Date(), null, null));
+		exampleQueryResults.add(new QueryResult("4","kotełki", "kazik", new Date(), null, null));
+		exampleQueryResults.add(new QueryResult("5", "heheszki", "ziutek", new Date(), null, null));
 	}
 
 	@Override

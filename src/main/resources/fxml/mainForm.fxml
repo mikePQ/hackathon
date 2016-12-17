@@ -5,4 +5,5 @@
 <VBox xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.cos.sie.popsulo.app.controller.MainController">
    <fx:include source="searchPanel.fxml" fx:id="searchPanel"/>
+   <fx:include source="playerForm.fxml" fx:id="player" />
 </VBox>
