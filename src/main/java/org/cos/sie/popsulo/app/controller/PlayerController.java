@@ -38,8 +38,6 @@ public class PlayerController
 
     @FXML private Label timeLabel;
     @FXML private Slider slider;
-    @FXML private Button playButton;
-    @FXML private Button pauseButton;
     @FXML private Label videoIdLabel;
     @FXML private Label titleLabel;
     @FXML private Label authorLabel;
@@ -85,6 +83,9 @@ public class PlayerController
 
     public void play()
     {
+        if (mediaPlayer.getCurrentTime().equals(mediaPlayer.getStopTime())) {
+            mediaPlayer.seek(mediaPlayer.getStartTime());
+        }
         mediaPlayer.play();
     }
 
@@ -159,44 +160,41 @@ public class PlayerController
         return format.format(date);
     }
 
-    private static String formatTime(Duration elapsed, Duration duration) {
-        int intElapsed = (int) floor(elapsed.toSeconds());
-        int elapsedHours = intElapsed / (60 * 60);
+    private static String formatTime(Duration elapsed, Duration duration)
+    {
+        int intElapsed = (int)floor(elapsed.toSeconds());
+        int elapsedHours = intElapsed / (SECONDS_MINUTES_HOURS * SECONDS_MINUTES_HOURS);
         if (elapsedHours > 0) {
-            intElapsed -= elapsedHours * 60 * 60;
+            intElapsed -= elapsedHours * SECONDS_MINUTES_HOURS * SECONDS_MINUTES_HOURS;
         }
-        int elapsedMinutes = intElapsed / 60;
-        int elapsedSeconds = intElapsed - elapsedHours * 60 * 60
-            - elapsedMinutes * 60;
+        int elapsedMinutes = intElapsed / SECONDS_MINUTES_HOURS;
+        int elapsedSeconds = intElapsed - elapsedHours * SECONDS_MINUTES_HOURS * SECONDS_MINUTES_HOURS
+            - elapsedMinutes * SECONDS_MINUTES_HOURS;
 
         if (duration.greaterThan(Duration.ZERO)) {
-            int intDuration = (int) floor(duration.toSeconds());
-            int durationHours = intDuration / (60 * 60);
+            int intDuration = (int)floor(duration.toSeconds());
+            int durationHours = intDuration / (SECONDS_MINUTES_HOURS * SECONDS_MINUTES_HOURS);
             if (durationHours > 0) {
-                intDuration -= durationHours * 60 * 60;
+                intDuration -= durationHours * SECONDS_MINUTES_HOURS * SECONDS_MINUTES_HOURS;
             }
-            int durationMinutes = intDuration / 60;
-            int durationSeconds = intDuration - durationHours * 60 * 60
-                - durationMinutes * 60;
+            int durationMinutes = intDuration / SECONDS_MINUTES_HOURS;
+            int durationSeconds = intDuration - durationHours * SECONDS_MINUTES_HOURS * SECONDS_MINUTES_HOURS
+                - durationMinutes * SECONDS_MINUTES_HOURS;
             if (durationHours > 0) {
-                return format("%d:%02d:%02d/%d:%02d:%02d",
-                    elapsedHours, elapsedMinutes, elapsedSeconds,
-                    durationHours, durationMinutes, durationSeconds);
+                return format("%d:%02d:%02d/%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds, durationHours,
+                    durationMinutes, durationSeconds);
             } else {
-                return format("%02d:%02d/%02d:%02d",
-                    elapsedMinutes, elapsedSeconds, durationMinutes,
-                    durationSeconds);
+                return format("%02d:%02d/%02d:%02d", elapsedMinutes, elapsedSeconds, durationMinutes, durationSeconds);
             }
         } else {
             if (elapsedHours > 0) {
-                return format("%d:%02d:%02d", elapsedHours,
-                    elapsedMinutes, elapsedSeconds);
+                return format("%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds);
             } else {
-                return format("%02d:%02d", elapsedMinutes,
-                    elapsedSeconds);
+                return format("%02d:%02d", elapsedMinutes, elapsedSeconds);
             }
         }
     }
 
     private static final double PERCENTS = 100.0;
+    private static final int SECONDS_MINUTES_HOURS = 60;
 }
