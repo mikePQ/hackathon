@@ -9,22 +9,27 @@ import javafx.beans.Observable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
+import org.controlsfx.dialog.ProgressDialog;
+import org.cos.sie.popsulo.LocalDiskCache;
 import org.cos.sie.popsulo.app.QueryResult;
 import org.cos.sie.popsulo.app.VGetStatus;
 import org.cos.sie.popsulo.app.utils.ResourceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -49,7 +54,10 @@ public class PlayerController
     @FXML private Label authorLabel;
     @FXML private Label dateLabel;
     @FXML private ImageView miniatureImageView;
+    @FXML private Button saveButton;
+    @FXML private Slider volumeSlider;
 
+    private Window window;
     private String titleBase;
     private String videoIdBase;
     private String authorBase;
@@ -57,6 +65,8 @@ public class PlayerController
     private StringProperty time;
     private Duration duration;
     private MediaPlayer mediaPlayer;
+    private QueryResult lastQueryResult;
+    private String lastUrl;
 
     @Override public void initialize(URL location, ResourceBundle resources)
     {
@@ -82,7 +92,6 @@ public class PlayerController
     }
 
     public void updateState(QueryResult result)
-        throws URISyntaxException
     {
         miniatureImageView.setImage(result.getMiniature());
 
@@ -100,17 +109,26 @@ public class PlayerController
             }
         });
 
+        volumeSlider.valueProperty().addListener(ov -> {
+            if (volumeSlider.isValueChanging()) {
+                mediaPlayer.setVolume(volumeSlider.getValue() / PERCENTS);
+            }
+        });
+
+
+
         updateProgress();
         mainPane.setVisible(true);
     }
 
     private void updateMediaPlayer(QueryResult result)
     {
-        String fileUrl = result.getFileUrl();
-        if (fileUrl == null) {
-            fileUrl = getStreamUrl(result.getVideoId());
+        lastQueryResult = result;
+        lastUrl = result.getFileUrl();
+        if (lastUrl == null) {
+            lastUrl = getStreamUrl(result.getVideoId());
         }
-        Media media = new Media(fileUrl);
+        Media media = new Media(lastUrl);
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setAutoPlay(false);
         mediaPlayer.currentTimeProperty().addListener((ChangeListener)(observable, oldValue, newValue) -> {
@@ -138,7 +156,8 @@ public class PlayerController
         timeLabel.textProperty().bind(time);
     }
 
-    private void updateProgress() {
+    private void updateProgress()
+    {
         if (duration != null) {
             Platform.runLater(() -> {
                 Duration currentTime = mediaPlayer.getCurrentTime();
@@ -146,6 +165,10 @@ public class PlayerController
                 slider.setDisable(duration.isUnknown());
                 if (!slider.isDisabled() && duration.greaterThan(Duration.ZERO) && !slider.isValueChanging()) {
                     slider.setValue(currentTime.divide(duration).toMillis() * PERCENTS);
+                }
+
+                if (!volumeSlider.isValueChanging()) {
+                    volumeSlider.setValue((int)Math.round(mediaPlayer.getVolume() * PERCENTS));
                 }
             });
         }
@@ -210,5 +233,34 @@ public class PlayerController
                 return format("%02d:%02d", elapsedMinutes, elapsedSeconds);
             }
         }
+    }
+
+    public void saveFile()
+    {
+        if (lastQueryResult.getFileUrl() != null) {
+            return;
+        }
+
+        Task<Void> cacheTask = new Task<Void>()
+        {
+            @Override protected Void call()
+                throws Exception
+            {
+                updateProgress(1, 100);
+                LocalDiskCache.getInstance().cacheQueryResult(lastQueryResult);
+                return null;
+            }
+        };
+        ProgressDialog progressDialog = new ProgressDialog(cacheTask);
+        new Thread(cacheTask).start();
+        ResourceBundle bundle = ResourceUtils.loadLabelsForDefaultLocale();
+        progressDialog.setTitle(bundle.getString("label.caching.video"));
+        progressDialog.setHeaderText(bundle.getString("label.caching.inprogress"));
+        progressDialog.initOwner(window);
+    }
+
+    public void setWindow(Window window)
+    {
+        this.window = window;
     }
 }

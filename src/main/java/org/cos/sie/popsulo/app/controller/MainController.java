@@ -1,6 +1,8 @@
 package org.cos.sie.popsulo.app.controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +17,12 @@ public class MainController {
 	private PlayerController playerController;
 
 	@FXML
+	private VBox vBox;
+
+	@FXML
 	private void initialize() {
 		logger.info("Initializing MainController...");
+		searchPanelController.setPlayerController(playerController);
+		playerController.setWindow(vBox.getScene().getWindow());
 	}
 }

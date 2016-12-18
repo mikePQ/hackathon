@@ -43,6 +43,8 @@ public class SearchPanelController {
 	@FXML
 	private TableColumn<QueryResult, Image> miniature;
 
+    private PlayerController playerController;
+
 	@FXML
 	@SuppressWarnings("unused")
 	private void initialize() {
@@ -86,7 +88,10 @@ public class SearchPanelController {
 		logger.info("Result clicked");
 		if ( event.isPrimaryButtonDown() && event.getClickCount() == 2 ) {
 			QueryResult selectedItem = results.getSelectionModel().getSelectedItem();
-			LocalDiskCache.getInstance().cacheQueryResult(selectedItem);
+            if (playerController != null) {
+                playerController.updateState(selectedItem);
+            }
+			//LocalDiskCache.getInstance().cacheQueryResult(selectedItem);
 		}
 	}
 
@@ -105,4 +110,8 @@ public class SearchPanelController {
 		logger.debug("Query succeded");
 		currentResults.addAll(FXCollections.observableList(results));
 	}
+
+    public void setPlayerController(PlayerController playerController) {
+        this.playerController = playerController;
+    }
 }
