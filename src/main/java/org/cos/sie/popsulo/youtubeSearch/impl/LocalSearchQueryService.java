@@ -7,6 +7,7 @@ import org.cos.sie.popsulo.youtubeSearch.SearchQueryService;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class LocalSearchQueryService
     implements SearchQueryService
@@ -16,8 +17,10 @@ public class LocalSearchQueryService
     @Override public List<QueryResult> queryYoutube(String queryString)
         throws IOException
     {
-        ArrayList<QueryResult> localCached = new ArrayList<>(LocalDiskCache.getInstance().getVidIDs().values());
+        List<QueryResult> localCached = LocalDiskCache.getInstance().getVidIDs().values().stream().filter(
+            queryResult -> Objects.nonNull(queryResult)).collect(Collectors.toList());
         Collections.sort(localCached, (o1, o2) -> {
+
             int i1 = StringUtils.getLevenshteinDistance(queryString, o1.getTitle());
             int i2 = StringUtils.getLevenshteinDistance(queryString, o2.getTitle());
 

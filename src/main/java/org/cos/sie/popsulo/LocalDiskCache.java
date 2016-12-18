@@ -91,7 +91,7 @@ public class LocalDiskCache {
 		JsonMaker.createJsonFile(queryResult);
 	}
 
-    public Map<String, QueryResult> getVidIDs()
+    public synchronized Map<String, QueryResult> getVidIDs()
     {
         return vidIDs;
     }
