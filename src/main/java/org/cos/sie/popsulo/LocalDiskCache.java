@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.ProgressBar;
+import oracle.jrockit.jfr.VMJFR;
 import org.apache.commons.io.FileUtils;
 import org.cos.sie.popsulo.app.QueryResult;
 import org.cos.sie.popsulo.converter.FormatConverter;
@@ -30,25 +31,18 @@ public class LocalDiskCache {
 
 	public static final String ldcPATH = "./LDC";
 
-	private static final String ldcTempFolder = "./LDC/temp";
-
 	private static final String pathSeperator = "/";
 
 	private static final String urlConstPart = "https://www.youtube.com/watch?v=";
 
 	private Map<String, QueryResult> vidIDs = new HashMap<String, QueryResult>();
 
+	private final Object mutex = new Object();
+
 	public LocalDiskCache() {
 		File ldcDir = new File(ldcPATH);
 		if ( !ldcDir.exists()) {
 			ldcDir.mkdir();
-			File ldcTempDir = new File(ldcTempFolder);
-			ldcTempDir.mkdir();
-		}
-		try {
-			FileUtils.cleanDirectory(new File(ldcTempFolder));
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		storeFileNamesInList();
 		System.out.println("No of videos in cache: " + vidIDs.size());
@@ -93,15 +87,23 @@ public class LocalDiskCache {
 		}
 		saveVideoMiniature(queryResult);
 		saveVideo(queryResult, videoID);
-		vidIDs.put(videoID, JsonMaker.getQueryResultFromJson(videoID));
+		addToMap(videoID, JsonMaker.getQueryResultFromJson(videoID));
 		convertCacheToMp3(queryResult, videoID);
 		JsonMaker.createJsonFile(queryResult);
 	}
 
-    public Map<String, QueryResult> getVidIDs()
-    {
-        return vidIDs;
-    }
+        public synchronized Map<String, QueryResult> getVidIDs()
+        {
+           return vidIDs;
+        }
+
+	private void addToMap(String videoID, QueryResult queryResultFromJson)
+	{
+		synchronized (mutex)
+		{
+			vidIDs.put(videoID, queryResultFromJson);
+		}
+	}
 
 	private void saveVideoMiniature(QueryResult queryResult) {
 		String format = "jpg";
@@ -127,8 +129,11 @@ public class LocalDiskCache {
 
 	private static void saveVideo(QueryResult queryResult, String videoID) {
 		logger.info("Download of \"" + queryResult.getTitle() + "\" requested");
+		File ldcDir = new File(ldcPATH + pathSeperator + videoID);
+		if ( !ldcDir.exists())
+			ldcDir.mkdir();
 		try {
-			VGet v = new VGet(new URL(urlConstPart + videoID), new File(ldcTempFolder));
+			VGet v = new VGet(new URL(urlConstPart + videoID), new File(ldcPATH + pathSeperator + videoID));
 			v.download();
 		} catch ( MalformedURLException e ) {
 			e.printStackTrace();
@@ -139,11 +144,13 @@ public class LocalDiskCache {
 	}
 
 	public boolean isQueryResultInCache(String videoID) {
-		return vidIDs.containsKey(videoID);
+		synchronized (mutex) {
+			return vidIDs.containsKey(videoID);
+		}
 	}
 
 	private static void changeNameToHash(String title, String videoID) {
-		File ldcTempFolderFile = new File(ldcTempFolder);
+		File ldcTempFolderFile = new File(ldcPATH + pathSeperator + videoID);
 		File fileResult = null;
 		for (final File fileEntry : ldcTempFolderFile.listFiles()) {
 			if (fileEntry.getAbsolutePath().endsWith(".webm") ||
@@ -156,7 +163,7 @@ public class LocalDiskCache {
 		File fileUsedToRenaming = new File(ldcPATH + pathSeperator + videoID + ".mp4");
 		fileResult.renameTo(fileUsedToRenaming);
 		try {
-			FileUtils.cleanDirectory(new File(ldcTempFolder));
+			FileUtils.deleteDirectory(ldcTempFolderFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
