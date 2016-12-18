@@ -9,7 +9,7 @@ public class DummyDownload {
 
     public static void main(String[] args) {
         try {
-            String url = "https://www.youtube.com/watch?v=WjrqpJQBKCQ";
+            String url = "https://www.youtube.com/watch?v=lvyLSlcpkr4";
             String path = "D:\\youtube";
             VGet v = new VGet(new URL(url), new File(path));
             v.download();
