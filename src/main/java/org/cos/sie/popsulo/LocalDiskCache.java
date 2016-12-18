@@ -28,7 +28,7 @@ public class LocalDiskCache {
 
 	private static LocalDiskCache instance = null;
 
-	private static final String ldcPATH = "./LDC";
+	public static final String ldcPATH = "./LDC";
 
 	private static final String ldcTempFolder = "./LDC";
 

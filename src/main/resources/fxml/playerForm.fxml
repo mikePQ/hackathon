@@ -22,7 +22,7 @@
                 <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="300.0" spacing="5.0">
                     <children>
                         <Button fx:id="saveButton" onAction="#saveFile" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false"
-                                prefHeight="35.0" prefWidth="245.0" text="Button">
+                                prefHeight="35.0" prefWidth="245.0">
                             <VBox.margin>
                                 <Insets bottom="10.0"/>
                             </VBox.margin>

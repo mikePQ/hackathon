@@ -17,12 +17,8 @@ public class MainController {
 	private PlayerController playerController;
 
 	@FXML
-	private VBox vBox;
-
-	@FXML
 	private void initialize() {
 		logger.info("Initializing MainController...");
 		searchPanelController.setPlayerController(playerController);
-		playerController.setWindow(vBox.getScene().getWindow());
 	}
 }

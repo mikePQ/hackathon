@@ -17,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.AudioTrack;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
@@ -30,6 +31,8 @@ import org.cos.sie.popsulo.app.utils.ResourceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -57,7 +60,6 @@ public class PlayerController
     @FXML private Button saveButton;
     @FXML private Slider volumeSlider;
 
-    private Window window;
     private String titleBase;
     private String videoIdBase;
     private String authorBase;
@@ -76,6 +78,7 @@ public class PlayerController
         authorBase = bundle.getString("labels.player.author");
         dateBase = bundle.getString("labels.player.video.date");
         mainPane.setVisible(false);
+        saveButton.setText(bundle.getString("labels.save.button"));
     }
 
     public void pause()
@@ -95,7 +98,11 @@ public class PlayerController
     {
         miniatureImageView.setImage(result.getMiniature());
 
-        updateMediaPlayer(result);
+        try {
+            updateMediaPlayer(result);
+        } catch (MalformedURLException e) {
+            logger.error("Cannot load media", e);
+        }
 
         duration = mediaPlayer.getMedia().getDuration();
         updateLabels(result);
@@ -122,13 +129,19 @@ public class PlayerController
     }
 
     private void updateMediaPlayer(QueryResult result)
+        throws MalformedURLException
     {
         lastQueryResult = result;
         lastUrl = result.getFileUrl();
         if (lastUrl == null) {
-            lastUrl = getStreamUrl(result.getVideoId());
+            if (LocalDiskCache.getInstance().isQueryResultInCache(result.getVideoId())) {
+                lastUrl = new File(LocalDiskCache.ldcPATH + "/" + result.getVideoId() + ".mp3").toURI().toURL().toString();
+            } else {
+                lastUrl = getStreamUrl(result.getVideoId());
+            }
         }
         Media media = new Media(lastUrl);
+        System.out.println(lastUrl);
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setAutoPlay(false);
         mediaPlayer.currentTimeProperty().addListener((ChangeListener)(observable, oldValue, newValue) -> {
@@ -246,7 +259,6 @@ public class PlayerController
             @Override protected Void call()
                 throws Exception
             {
-                updateProgress(1, 100);
                 LocalDiskCache.getInstance().cacheQueryResult(lastQueryResult);
                 return null;
             }
@@ -254,13 +266,8 @@ public class PlayerController
         ProgressDialog progressDialog = new ProgressDialog(cacheTask);
         new Thread(cacheTask).start();
         ResourceBundle bundle = ResourceUtils.loadLabelsForDefaultLocale();
-        progressDialog.setTitle(bundle.getString("label.caching.video"));
-        progressDialog.setHeaderText(bundle.getString("label.caching.inprogress"));
-        progressDialog.initOwner(window);
-    }
-
-    public void setWindow(Window window)
-    {
-        this.window = window;
+        progressDialog.setTitle(bundle.getString("labels.caching.video"));
+        progressDialog.setHeaderText(bundle.getString("labels.caching.inprogress"));
+        progressDialog.initOwner(mainPane.getScene().getWindow());
     }
 }
