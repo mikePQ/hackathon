@@ -14,6 +14,7 @@ import org.cos.sie.popsulo.app.utils.ResourceUtils;
 import org.cos.sie.popsulo.app.utils.timer.TimerService;
 import org.cos.sie.popsulo.youtubeSearch.SearchQueryService;
 import org.cos.sie.popsulo.youtubeSearch.impl.DefaultSearchQueryService;
+import org.cos.sie.popsulo.youtubeSearch.impl.LocalSearchQueryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,12 +68,27 @@ public class SearchPanelController {
 		});
 		logger.info("Registered listener for search box");
 
-		initializeResultsGrid();
-
 		queryService = new DefaultSearchQueryService();
         ResourceBundle bundle = ResourceUtils.loadLabelsForDefaultLocale();
         onlyLocalCheckBox.setText(bundle.getString("labels.search.only.local"));
-	}
+        onlyLocalCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (onlyLocalCheckBox.isSelected()) {
+                if (queryService instanceof DefaultSearchQueryService) {
+                    queryService = new LocalSearchQueryService();
+                    currentResults.clear();
+                    initializeResultsGrid();
+                }
+            } else {
+                if (queryService instanceof LocalSearchQueryService) {
+                    queryService = new DefaultSearchQueryService();
+                    currentResults.clear();
+                    initializeResultsGrid();
+                }
+            }
+        });
+
+        initializeResultsGrid();
+    }
 
 	private void initializeResultsGrid() {
 		title.setCellValueFactory(new PropertyValueFactory<>("title"));

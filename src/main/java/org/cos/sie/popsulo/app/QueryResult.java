@@ -27,6 +27,7 @@ public class QueryResult {
 	private String title;
 	private String author;
 	private String publishingDate;
+    private String miniatureUrl;
 	private int numberOfViews;
 	private transient Image miniature;
 	private transient String fileUrl;
@@ -39,8 +40,6 @@ public class QueryResult {
 	public void setCached(Boolean cached) {
 		this.cached = cached;
 	}
-
-	private transient String miniatureUrl;
 
 	public String getMiniatureUrl() {
 		return miniatureUrl;
@@ -91,4 +90,10 @@ public class QueryResult {
 		}
 		return null;
 	}
+
+    public void initCachedState()
+    {
+        miniature = new Image(miniatureUrl);
+        cached = true;
+    }
 }

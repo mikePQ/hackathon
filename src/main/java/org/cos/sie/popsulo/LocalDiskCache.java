@@ -91,6 +91,11 @@ public class LocalDiskCache {
 		JsonMaker.createJsonFile(queryResult);
 	}
 
+    public Map<String, QueryResult> getVidIDs()
+    {
+        return vidIDs;
+    }
+
 	private void saveVideoMiniature(QueryResult queryResult) {
 		String format = "jpg";
 		String filename = ldcPATH + pathSeperator + queryResult.getVideoId() + ".jpg";
