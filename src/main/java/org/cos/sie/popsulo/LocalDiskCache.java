@@ -87,11 +87,11 @@ public class LocalDiskCache {
 		String format = "jpg";
 		String filename = ldcPATH + pathSeperator + queryResult.getVideoId() + ".jpg";
 		File file = new File(filename);
-		try {
+	/*	try {
 			ImageIO.write(SwingFXUtils.fromFXImage(queryResult.getMiniature(), null), format, file);
 		} catch ( IOException exc ) {
 			logger.error("Failed to save file due to: " + exc.getMessage(), exc);
-		}
+		}*/
 	}
 
 	private void convertCacheToMp3(QueryResult queryResult, String pathToResultCache) {
@@ -122,8 +122,12 @@ public class LocalDiskCache {
 	}
 
 	private static void changeNameToHash(String title, String videoID) {
-		File fileRenamed = new File(ldcPATH + pathSeperator + title + ".mp4");
+		File fileRenamed = null;
 		File fileToRename = new File(ldcPATH + pathSeperator + videoID + ".mp4");
+		fileRenamed = new File(ldcPATH + pathSeperator + title + ".webm");
+		if(!fileRenamed.exists())
+			fileRenamed = new File(ldcPATH + pathSeperator + title + ".mp4");
+
 		fileRenamed.renameTo(fileToRename);
 	}
 
