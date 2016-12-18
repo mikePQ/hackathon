@@ -4,6 +4,7 @@ import com.github.axet.vget.VGet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.control.ProgressBar;
 import org.cos.sie.popsulo.app.QueryResult;
 import org.cos.sie.popsulo.converter.FormatConverter;
 import org.slf4j.Logger;

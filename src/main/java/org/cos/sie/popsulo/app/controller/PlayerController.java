@@ -12,15 +12,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
-import org.controlsfx.dialog.ProgressDialog;
 import org.cos.sie.popsulo.LocalDiskCache;
 import org.cos.sie.popsulo.app.QueryResult;
 import org.cos.sie.popsulo.app.VGetStatus;
@@ -28,7 +27,6 @@ import org.cos.sie.popsulo.app.utils.ResourceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -54,8 +52,9 @@ public class PlayerController
     @FXML private Label authorLabel;
     @FXML private Label dateLabel;
     @FXML private ImageView miniatureImageView;
-    @FXML private Button saveButton;
+    @FXML private ProgressBar downloadProgressBar;
     @FXML private Slider volumeSlider;
+    @FXML private Label downloadingLabel;
 
     private String titleBase;
     private String videoIdBase;
@@ -75,7 +74,8 @@ public class PlayerController
         authorBase = bundle.getString("labels.player.author");
         dateBase = bundle.getString("labels.player.video.date");
         mainPane.setVisible(false);
-        saveButton.setText(bundle.getString("labels.save.button"));
+        downloadProgressBar.setVisible(false);
+        downloadingLabel.setVisible(false);
     }
 
     public void pause()
@@ -93,6 +93,8 @@ public class PlayerController
 
     public void updateState(QueryResult result)
     {
+        downloadingLabel.setVisible(false);
+        downloadProgressBar.setVisible(false);
         miniatureImageView.setImage(result.getMiniature());
 
         try {
@@ -199,6 +201,14 @@ public class PlayerController
                         @Override protected Void call()
                             throws Exception
                         {
+                            Platform.runLater(() -> {
+                                ResourceBundle bundle = ResourceUtils.loadLabelsForDefaultLocale();
+                                downloadingLabel.setText(bundle.getString("labels.player.downloading"));
+                                downloadingLabel.setVisible(true);
+
+                                downloadProgressBar.setVisible(true);
+                                downloadProgressBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
+                            });
                             LocalDiskCache.getInstance().cacheQueryResult(lastQueryResult);
                             return null;
                         }
@@ -251,30 +261,27 @@ public class PlayerController
         }
     }
 
-    public void saveFile()
-    {
-        try {
-            if (lastQueryResult.getFileCache() != null) {
-                return;
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        Task<Void> cacheTask = new Task<Void>()
-        {
-            @Override protected Void call()
-                throws Exception
-            {
-                LocalDiskCache.getInstance().cacheQueryResult(lastQueryResult);
-                return null;
-            }
-        };
-        ProgressDialog progressDialog = new ProgressDialog(cacheTask);
-        new Thread(cacheTask).start();
-        ResourceBundle bundle = ResourceUtils.loadLabelsForDefaultLocale();
-        progressDialog.setTitle(bundle.getString("labels.caching.video"));
-        progressDialog.setHeaderText(bundle.getString("labels.caching.inprogress"));
-        progressDialog.initOwner(mainPane.getScene().getWindow());
-    }
+//    public void saveFile()
+//        throws MalformedURLException
+//    {
+//        if (lastQueryResult.getFileCache() != null) {
+//            return;
+//        }
+//
+//        Task<Void> cacheTask = new Task<Void>()
+//        {
+//            @Override protected Void call()
+//                throws Exception
+//            {
+//                LocalDiskCache.getInstance().cacheQueryResult(lastQueryResult);
+//                return null;
+//            }
+//        };
+//        ProgressDialog progressDialog = new ProgressDialog(cacheTask);
+//        new Thread(cacheTask).start();
+//        ResourceBundle bundle = ResourceUtils.loadLabelsForDefaultLocale();
+//        progressDialog.setTitle(bundle.getString("labels.caching.video"));
+//        progressDialog.setHeaderText(bundle.getString("labels.caching.inprogress"));
+//        progressDialog.initOwner(mainPane.getScene().getWindow());
+//    }
 }

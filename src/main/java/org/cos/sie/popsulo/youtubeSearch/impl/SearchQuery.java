@@ -66,48 +66,4 @@ public class SearchQuery
         return searchResponse.getItems();
     }
 
-    public static void main(String[] args)
-    {
-        try {
-            SearchQuery search = new SearchQuery();
-            prettyPrint(search.searchForVideos("udka Suflera feat Zbigniew Stonoga - Coś się, coś s", 1).iterator(), "udka Suflera feat Zbigniew Stonoga - Coś się, coś s");
-        } catch (GoogleJsonResponseException e) {
-            System.err.println(
-                "There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());
-        } catch (IOException e) {
-            System.err.println("There was an IO error: " + e.getCause() + " : " + e.getMessage());
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-    }
-
-    /*
-     * Do debugowania, pozniej WYPIERDOL
-     */
-
-    private static void prettyPrint(Iterator<SearchResult> iteratorSearchResults, String query)
-    {
-
-        System.out.println("Videos for search on \"" + query + "\".");
-
-        if (!iteratorSearchResults.hasNext()) {
-            System.out.println(" There aren't any results for your query.");
-        }
-        while (iteratorSearchResults.hasNext()) {
-            SearchResult singleVideo = iteratorSearchResults.next();
-            LocalDiskCache.getInstance().cacheQueryResult(DefaultSearchQueryService.convertToQueryResult(singleVideo));
-            ResourceId rId = singleVideo.getId();
-
-            // Confirm that the result represents a video. Otherwise, the
-            // item will not contain a video ID.
-            if (rId.getKind().equals("youtube#video")) {
-                Thumbnail thumbnail = singleVideo.getSnippet().getThumbnails().getDefault();
-
-                System.out.println(
-                    " Video Id" + rId.getVideoId() + " Title: " + singleVideo.getSnippet().getTitle()
-                        + "Channel " + singleVideo.getSnippet().getChannelTitle() + " Date"
-                        + singleVideo.getSnippet().getPublishedAt());
-            }
-        }
-    }
 }
