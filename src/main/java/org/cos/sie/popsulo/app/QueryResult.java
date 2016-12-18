@@ -15,6 +15,7 @@ public class QueryResult {
 		this.publishingDate = format.format(publishingDate);
 		this.miniature = miniature;
 		this.fileUrl = fileUrl;
+		this.numberOfViews = 1;
 	}
 	public QueryResult(){
    };
@@ -23,6 +24,7 @@ public class QueryResult {
 	private String title;
 	private String author;
 	private String publishingDate;
+	private int numberOfViews;
 	private transient Image miniature;
 	private transient String fileUrl;
 	private transient Boolean cached;
@@ -59,6 +61,14 @@ public class QueryResult {
 
 	public String getPublishingDate() {
 		return publishingDate;
+	}
+
+	public int getNumberOfViews() {
+		return numberOfViews;
+	}
+
+	public void incNoOfViews() {
+		++numberOfViews;
 	}
 
 	public Image getMiniature() {

@@ -15,9 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -30,13 +28,13 @@ public class LocalDiskCache {
 
 	public static final String ldcPATH = "./LDC";
 
-	private static final String ldcTempFolder = "./LDC";
+	private static final String ldcTempFolder = "./LDC/temp";
 
 	private static final String pathSeperator = "/";
 
 	private static final String urlConstPart = "https://www.youtube.com/watch?v=";
 
-	List<String> vidIDs = new ArrayList<String>();
+	private Map<String, QueryResult> vidIDs = new HashMap<String, QueryResult>();
 
 	public LocalDiskCache() {
 		File ldcDir = new File(ldcPATH);
@@ -64,7 +62,7 @@ public class LocalDiskCache {
 					if ( "mp3".equals(extension) ) {
 						String videoId = fileName.substring(0, indexOfExtension);
 						logger.info("Added file with id: " + videoId + " to cache");
-						vidIDs.add(videoId);
+						vidIDs.put(videoId, JsonMaker.getQueryResultFromJson(videoId));
 					}
 				}
 			}
@@ -82,11 +80,12 @@ public class LocalDiskCache {
 		final String videoID = queryResult.getVideoId();
 		if ( isQueryResultInCache(videoID) ) {
 			logger.info("Video with id: " + videoID + " found in cache");
+			vidIDs.get(videoID).incNoOfViews();
 			return;
 		}
 		saveVideoMiniature(queryResult);
 		saveVideo(queryResult, videoID);
-		vidIDs.add(videoID);
+		vidIDs.put(videoID, JsonMaker.getQueryResultFromJson(videoID));
 		convertCacheToMp3(queryResult, videoID);
 		JsonMaker.createJsonFile(queryResult);
 	}
@@ -95,11 +94,11 @@ public class LocalDiskCache {
 		String format = "jpg";
 		String filename = ldcPATH + pathSeperator + queryResult.getVideoId() + ".jpg";
 		File file = new File(filename);
-	/*	try {
+		try {
 			ImageIO.write(SwingFXUtils.fromFXImage(queryResult.getMiniature(), null), format, file);
 		} catch ( IOException exc ) {
 			logger.error("Failed to save file due to: " + exc.getMessage(), exc);
-		}*/
+		}
 	}
 
 	private void convertCacheToMp3(QueryResult queryResult, String pathToResultCache) {
@@ -126,7 +125,7 @@ public class LocalDiskCache {
 	}
 
 	public boolean isQueryResultInCache(String videoID) {
-		return vidIDs.contains(videoID);
+		return vidIDs.containsKey(videoID);
 	}
 
 	private static void changeNameToHash(String title, String videoID) {
