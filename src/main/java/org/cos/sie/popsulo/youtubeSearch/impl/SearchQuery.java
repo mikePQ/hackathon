@@ -70,7 +70,7 @@ public class SearchQuery
     {
         try {
             SearchQuery search = new SearchQuery();
-            prettyPrint(search.searchForVideos("jestesmy zgubieni", 5).iterator(), "jestesmy zgubieni");
+            prettyPrint(search.searchForVideos("udka Suflera feat Zbigniew Stonoga - Coś się, coś s", 1).iterator(), "udka Suflera feat Zbigniew Stonoga - Coś się, coś s");
         } catch (GoogleJsonResponseException e) {
             System.err.println(
                 "There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());
