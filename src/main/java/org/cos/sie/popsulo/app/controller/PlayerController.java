@@ -131,7 +131,7 @@ public class PlayerController
         lastQueryResult = result;
         lastUrl = result.getFileCache();
         if (lastUrl == null) {
-                lastUrl = getStreamUrl(result.getVideoId());
+                lastUrl = getStreamUrl(result);
         }
         System.out.println(lastUrl);
         Media media = new Media(lastUrl);
@@ -181,11 +181,11 @@ public class PlayerController
         }
     }
 
-    private String getStreamUrl(String videoId)
+    private String getStreamUrl(QueryResult result)
     {
         try {
             final AtomicBoolean stop = new AtomicBoolean(false);
-            URL web = new URL(baseUrl + videoId);
+            URL web = new URL(baseUrl + result.getVideoId());
             VGetParser user = VGet.parser(web);
 
             VideoInfo videoinfo = user.info(web);
@@ -210,6 +210,12 @@ public class PlayerController
                                 downloadProgressBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
                             });
                             LocalDiskCache.getInstance().cacheQueryResult(lastQueryResult);
+                            Platform.runLater(() -> {
+                                downloadingLabel.setVisible(false);
+                                downloadProgressBar.setVisible(false);
+                                downloadProgressBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
+                                updateState(result);
+                            });
                             return null;
                         }
                     };

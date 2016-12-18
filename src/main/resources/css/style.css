@@ -57,4 +57,8 @@ Label {
     -fx-padding: 0.333333em;
 }
 
+.check-box {
+    -fx-text-fill: white;
+}
+
 

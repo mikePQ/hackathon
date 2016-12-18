@@ -10,16 +10,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import org.cos.sie.popsulo.app.QueryResult;
+import org.cos.sie.popsulo.app.utils.ResourceUtils;
 import org.cos.sie.popsulo.app.utils.timer.TimerService;
 import org.cos.sie.popsulo.youtubeSearch.SearchQueryService;
 import org.cos.sie.popsulo.youtubeSearch.impl.DefaultSearchQueryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class SearchPanelController {
 
@@ -47,6 +45,9 @@ public class SearchPanelController {
 	@FXML
 	private TableColumn<QueryResult, Boolean> isCached;
 
+    @FXML
+    private CheckBox onlyLocalCheckBox;
+
     private PlayerController playerController;
 
     private static Map<Boolean, Image> cachedIcons = new HashMap<>();
@@ -69,6 +70,8 @@ public class SearchPanelController {
 		initializeResultsGrid();
 
 		queryService = new DefaultSearchQueryService();
+        ResourceBundle bundle = ResourceUtils.loadLabelsForDefaultLocale();
+        onlyLocalCheckBox.setText(bundle.getString("labels.search.only.local"));
 	}
 
 	private void initializeResultsGrid() {
