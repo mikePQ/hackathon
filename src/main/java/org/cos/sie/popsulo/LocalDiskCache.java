@@ -28,7 +28,9 @@ public class LocalDiskCache {
 
 	private static LocalDiskCache instance = null;
 
-	private static final String ldcPATH = "./LDC";
+	public static final String ldcPATH = "./LDC";
+
+	private static final String ldcTempFolder = "./LDC";
 
 	private static final String pathSeperator = "/";
 
@@ -38,8 +40,11 @@ public class LocalDiskCache {
 
 	public LocalDiskCache() {
 		File ldcDir = new File(ldcPATH);
-		if ( !ldcDir.exists() )
+		if ( !ldcDir.exists()) {
 			ldcDir.mkdir();
+			File ldcTempDir = new File(ldcPATH);
+			ldcTempDir.mkdir();
+		}
 		storeFileNamesInList();
 		System.out.println("No of videos in cache: " + vidIDs.size());
 	}
@@ -111,7 +116,7 @@ public class LocalDiskCache {
 	private static void saveVideo(QueryResult queryResult, String videoID) {
 		logger.info("Download of \"" + queryResult.getTitle() + "\" requested");
 		try {
-			VGet v = new VGet(new URL(urlConstPart + videoID), new File(ldcPATH));
+			VGet v = new VGet(new URL(urlConstPart + videoID), new File(ldcTempFolder));
 			v.download();
 		} catch ( MalformedURLException e ) {
 			e.printStackTrace();
@@ -125,22 +130,17 @@ public class LocalDiskCache {
 	}
 
 	private static void changeNameToHash(String title, String videoID) {
-		title = title.replaceAll(" \\|", "");
-		File fileRenamed = null;
-		File fileToRename = new File(ldcPATH + pathSeperator + videoID + ".mp4");
-		fileRenamed = new File(ldcPATH + pathSeperator + title + ".webm");
-		if(!fileRenamed.exists()) {
-			fileRenamed = new File(ldcPATH + pathSeperator + title + ".mp4");
-		}
-		else
-		{
-			try {
-				Files.delete(Paths.get(ldcPATH + pathSeperator + title + ".mp4"));
-			} catch (IOException e) {
-				e.printStackTrace();
+		File ldcTemporaryFolder = new File(ldcTempFolder);
+		File fileResult = null;
+		for (final File fileEntry : ldcTemporaryFolder.listFiles()) {
+			if (fileEntry.getAbsolutePath().endsWith(".webm")){
+				fileResult = fileEntry;
+				break;
 			}
+			fileResult = fileEntry;
 		}
-        fileRenamed.renameTo(fileToRename);
+		File fileUsedToRenaming = new File(ldcTempFolder + pathSeperator + videoID + ".mp4");
+		fileResult.renameTo(fileUsedToRenaming);
 	}
 
 	static class JsonMaker {

@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.apache.tools.ant.Main;
+import org.cos.sie.popsulo.app.controller.MainController;
 import org.cos.sie.popsulo.app.utils.ResourceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +26,8 @@ public class StartupClass extends Application {
 
 	public void start(Stage primaryStage) throws Exception {
 		ResourceBundle resources = ResourceUtils.loadLabelsForDefaultLocale();
-		Parent root = FXMLLoader.load(getClass().getResource("/fxml/mainForm.fxml"), resources);
+		FXMLLoader loader = new FXMLLoader();
+		Parent root = loader.load(getClass().getResource("/fxml/mainForm.fxml"), resources);
 		logger.info("Loaded main fxml from file");
 		Image mainIcon = new Image(getClass().getResourceAsStream("/icons/mainIcon.png"));
 		primaryStage.getIcons().add(mainIcon);
