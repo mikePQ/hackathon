@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.ProgressBar;
+import org.apache.commons.io.FileUtils;
 import org.cos.sie.popsulo.app.QueryResult;
 import org.cos.sie.popsulo.converter.FormatConverter;
 import org.slf4j.Logger;
@@ -44,6 +45,11 @@ public class LocalDiskCache {
 			File ldcTempDir = new File(ldcTempFolder);
 			ldcTempDir.mkdir();
 		}
+		try {
+			FileUtils.cleanDirectory(new File(ldcTempFolder));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		storeFileNamesInList();
 		System.out.println("No of videos in cache: " + vidIDs.size());
 	}
@@ -82,6 +88,7 @@ public class LocalDiskCache {
 		if ( isQueryResultInCache(videoID) ) {
 			logger.info("Video with id: " + videoID + " found in cache");
 			vidIDs.get(videoID).incNoOfViews();
+			JsonMaker.createJsonFile(vidIDs.get(videoID));
 			return;
 		}
 		saveVideoMiniature(queryResult);
@@ -139,7 +146,8 @@ public class LocalDiskCache {
 		File ldcTempFolderFile = new File(ldcTempFolder);
 		File fileResult = null;
 		for (final File fileEntry : ldcTempFolderFile.listFiles()) {
-			if (fileEntry.getAbsolutePath().endsWith(".webm")){
+			if (fileEntry.getAbsolutePath().endsWith(".webm") ||
+				fileEntry.getAbsolutePath().endsWith(".audio.mp4")) {
 				fileResult = fileEntry;
 				break;
 			}
@@ -147,6 +155,11 @@ public class LocalDiskCache {
 		}
 		File fileUsedToRenaming = new File(ldcPATH + pathSeperator + videoID + ".mp4");
 		fileResult.renameTo(fileUsedToRenaming);
+		try {
+			FileUtils.cleanDirectory(new File(ldcTempFolder));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	static class JsonMaker {
