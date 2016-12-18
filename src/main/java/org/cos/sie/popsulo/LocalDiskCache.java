@@ -13,7 +13,9 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Karol on 2016-12-17.
@@ -28,11 +30,30 @@ public class LocalDiskCache
 
     private static final String urlConstPart = "https://www.youtube.com/watch?v=";
 
+    List<String> vidIDs = new ArrayList<String>();
+
     public LocalDiskCache()
     {
         File ldcDir = new File(ldcPATH);
         if (!ldcDir.exists())
             ldcDir.mkdir();
+        storeFileNamesInList();
+        System.out.println("No of videos in cache: " + vidIDs.size());
+    }
+
+    private void storeFileNamesInList()
+    {
+        File folder = new File(ldcPATH);
+        File[] listOfFiles = folder.listFiles();
+
+        for (int i = 0; i < listOfFiles.length; i++) {
+            if (listOfFiles[i].isFile()) {
+                String fileName = listOfFiles[i].getName();
+                int indexOfExtension = fileName.indexOf('.');
+                if (indexOfExtension != -1)
+                    vidIDs.add(fileName.substring(indexOfExtension));
+            }
+        }
     }
 
     public static LocalDiskCache getInstance()
@@ -63,7 +84,6 @@ public class LocalDiskCache
         }
         assert formatConverter != null;
         formatConverter.convertCachedResult(ldcPATH + pathSeperator + pathToResultCache);
-
     }
 
     private static void saveVideo(QueryResult queryResult, String videoID)
