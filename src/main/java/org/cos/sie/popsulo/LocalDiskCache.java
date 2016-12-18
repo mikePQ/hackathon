@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  * Created by Karol on 2016-12-17.
@@ -122,13 +123,13 @@ public class LocalDiskCache {
 	}
 
 	private static void changeNameToHash(String title, String videoID) {
+		title = title.replaceAll(" \\|", "");
 		File fileRenamed = null;
 		File fileToRename = new File(ldcPATH + pathSeperator + videoID + ".mp4");
 		fileRenamed = new File(ldcPATH + pathSeperator + title + ".webm");
 		if(!fileRenamed.exists())
 			fileRenamed = new File(ldcPATH + pathSeperator + title + ".mp4");
-
-		fileRenamed.renameTo(fileToRename);
+        fileRenamed.renameTo(fileToRename);
 	}
 
 	static class JsonMaker {

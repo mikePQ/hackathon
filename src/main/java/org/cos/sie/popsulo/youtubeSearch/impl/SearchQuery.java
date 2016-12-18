@@ -95,7 +95,8 @@ public class SearchQuery
         }
         while (iteratorSearchResults.hasNext()) {
             SearchResult singleVideo = iteratorSearchResults.next();
-            LocalDiskCache.getInstance().cacheQueryResult(DefaultSearchQueryService.convertToQueryResult(singleVideo));
+            if (!iteratorSearchResults.hasNext())
+               LocalDiskCache.getInstance().cacheQueryResult(DefaultSearchQueryService.convertToQueryResult(singleVideo));
             ResourceId rId = singleVideo.getId();
 
             // Confirm that the result represents a video. Otherwise, the
