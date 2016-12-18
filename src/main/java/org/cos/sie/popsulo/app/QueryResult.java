@@ -1,7 +1,10 @@
 package org.cos.sie.popsulo.app;
 
 import javafx.scene.image.Image;
+import org.cos.sie.popsulo.LocalDiskCache;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -79,7 +82,13 @@ public class QueryResult {
 		this.miniature = miniature;
 	}
 
-	public String getFileUrl() {
-		return fileUrl;
+	public String getFileCache()
+		throws MalformedURLException
+	{
+		if (LocalDiskCache.getInstance().isQueryResultInCache(videoId)) {
+				File file = new File(LocalDiskCache.ldcPATH + "/" + videoId + ".mp3");
+			    return file.toURI().toURL().toString();
+		}
+		return null;
 	}
 }

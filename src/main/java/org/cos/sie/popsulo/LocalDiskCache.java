@@ -40,7 +40,7 @@ public class LocalDiskCache {
 		File ldcDir = new File(ldcPATH);
 		if ( !ldcDir.exists()) {
 			ldcDir.mkdir();
-			File ldcTempDir = new File(ldcPATH);
+			File ldcTempDir = new File(ldcTempFolder);
 			ldcTempDir.mkdir();
 		}
 		storeFileNamesInList();
@@ -121,6 +121,7 @@ public class LocalDiskCache {
 			e.printStackTrace();
 		}
 		changeNameToHash(queryResult.getTitle(), videoID);
+		logger.info("Download of \"" + queryResult.getTitle() + "\" done");
 		//Video was not cached before, we need to process it
 	}
 
@@ -129,16 +130,16 @@ public class LocalDiskCache {
 	}
 
 	private static void changeNameToHash(String title, String videoID) {
-		File ldcTemporaryFolder = new File(ldcTempFolder);
+		File ldcTempFolderFile = new File(ldcTempFolder);
 		File fileResult = null;
-		for (final File fileEntry : ldcTemporaryFolder.listFiles()) {
+		for (final File fileEntry : ldcTempFolderFile.listFiles()) {
 			if (fileEntry.getAbsolutePath().endsWith(".webm")){
 				fileResult = fileEntry;
 				break;
 			}
 			fileResult = fileEntry;
 		}
-		File fileUsedToRenaming = new File(ldcTempFolder + pathSeperator + videoID + ".mp4");
+		File fileUsedToRenaming = new File(ldcPATH + pathSeperator + videoID + ".mp4");
 		fileResult.renameTo(fileUsedToRenaming);
 	}
 

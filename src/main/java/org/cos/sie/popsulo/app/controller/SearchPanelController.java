@@ -119,7 +119,6 @@ public class SearchPanelController {
             if (playerController != null) {
                 playerController.updateState(selectedItem);
             }
-			//LocalDiskCache.getInstance().cacheQueryResult(selectedItem);
 		}
 	}
 

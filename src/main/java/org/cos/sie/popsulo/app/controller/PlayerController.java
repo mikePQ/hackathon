@@ -17,11 +17,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.AudioTrack;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.util.Duration;
 import org.controlsfx.dialog.ProgressDialog;
 import org.cos.sie.popsulo.LocalDiskCache;
@@ -130,16 +127,13 @@ public class PlayerController
         throws MalformedURLException
     {
         lastQueryResult = result;
-        lastUrl = result.getFileUrl();
+        lastUrl = result.getFileCache();
         if (lastUrl == null) {
-            if (LocalDiskCache.getInstance().isQueryResultInCache(result.getVideoId())) {
-                lastUrl = new File(LocalDiskCache.ldcPATH + "/" + result.getVideoId() + ".mp3").toURI().toURL().toString();
-            } else {
                 lastUrl = getStreamUrl(result.getVideoId());
-            }
         }
-        Media media = new Media(lastUrl);
         System.out.println(lastUrl);
+        Media media = new Media(lastUrl);
+
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setAutoPlay(false);
         mediaPlayer.currentTimeProperty().addListener((ChangeListener)(observable, oldValue, newValue) -> {
@@ -259,8 +253,12 @@ public class PlayerController
 
     public void saveFile()
     {
-        if (lastQueryResult.getFileUrl() != null) {
-            return;
+        try {
+            if (lastQueryResult.getFileCache() != null) {
+                return;
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
 
         Task<Void> cacheTask = new Task<Void>()
