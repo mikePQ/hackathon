@@ -33,6 +33,8 @@ public class StartupClass extends Application {
 		primaryStage.getIcons().add(mainIcon);
 		primaryStage.setTitle(resources.getString("labels.app.name"));
 		Scene scene = new Scene(root);
+		String css = this.getClass().getResource("/css/style.css").toExternalForm();
+		scene.getStylesheets().add(css);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		logger.info("Main window showed");

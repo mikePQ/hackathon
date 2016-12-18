@@ -122,8 +122,6 @@ public class PlayerController
             }
         });
 
-
-
         updateProgress();
         mainPane.setVisible(true);
     }
@@ -202,6 +200,17 @@ public class PlayerController
             List<VideoFileInfo> list = videoinfo.getInfo();
             if (list != null) {
                 for (VideoFileInfo d : list) {
+                    Task<Void> cacheTask = new Task<Void>()
+                    {
+                        @Override protected Void call()
+                            throws Exception
+                        {
+                            LocalDiskCache.getInstance().cacheQueryResult(lastQueryResult);
+                            return null;
+                        }
+                    };
+                    new Thread(cacheTask).start();
+
                     return d.getSource().toString();
                 }
             }
