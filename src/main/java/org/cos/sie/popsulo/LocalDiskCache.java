@@ -81,7 +81,6 @@ public class LocalDiskCache {
 		final String videoID = queryResult.getVideoId();
 		if ( isQueryResultInCache(videoID) ) {
 			logger.info("Video with id: " + videoID + " found in cache");
-			vidIDs.get(videoID).incNoOfViews();
 			JsonMaker.createJsonFile(vidIDs.get(videoID));
 			return;
 		}
@@ -169,6 +168,14 @@ public class LocalDiskCache {
 		}
 	}
 
+	public int incJsonInfo(String videoId)
+	{
+		QueryResult qResult = vidIDs.get(videoId);
+		qResult.incNoOfViews();
+		JsonMaker.createJsonFile(qResult);
+		return qResult.getNumberOfViews();
+	}
+
 	static class JsonMaker {
 		private final static String videoId = "videoId";
 
@@ -179,7 +186,8 @@ public class LocalDiskCache {
 		private final static String publishingDate = "publishingDate";
 
 		public static void createJsonFile(QueryResult queryResult) {
-			try ( FileWriter writer = new FileWriter(ldcPATH + pathSeperator + queryResult.getVideoId()) ) {
+			String filePath = ldcPATH + pathSeperator + queryResult.getVideoId();
+			try ( FileWriter writer = new FileWriter(filePath) ) {
 				Gson gson = new GsonBuilder().create();
 				gson.toJson(queryResult, writer);
 			} catch ( IOException e ) {

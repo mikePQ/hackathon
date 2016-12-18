@@ -18,7 +18,6 @@ public class QueryResult {
 		this.publishingDate = format.format(publishingDate);
 		this.miniature = miniature;
 		this.fileUrl = fileUrl;
-		this.numberOfViews = 1;
 	}
 	public QueryResult(){
    };
@@ -85,6 +84,7 @@ public class QueryResult {
 		throws MalformedURLException
 	{
 		if (LocalDiskCache.getInstance().isQueryResultInCache(videoId)) {
+			    numberOfViews = LocalDiskCache.getInstance().incJsonInfo(videoId);
 				File file = new File(LocalDiskCache.ldcPATH + "/" + videoId + ".mp3");
 			    return file.toURI().toURL().toString();
 		}
