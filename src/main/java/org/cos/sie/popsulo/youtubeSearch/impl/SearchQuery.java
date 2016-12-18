@@ -93,13 +93,9 @@ public class SearchQuery
         if (!iteratorSearchResults.hasNext()) {
             System.out.println(" There aren't any results for your query.");
         }
-
-        SearchResult singleVideoasd = iteratorSearchResults.next();
-        LocalDiskCache.getInstance().cacheQueryResult(DefaultSearchQueryService.convertToQueryResult(singleVideoasd));
-
         while (iteratorSearchResults.hasNext()) {
-
             SearchResult singleVideo = iteratorSearchResults.next();
+            LocalDiskCache.getInstance().cacheQueryResult(DefaultSearchQueryService.convertToQueryResult(singleVideo));
             ResourceId rId = singleVideo.getId();
 
             // Confirm that the result represents a video. Otherwise, the

@@ -5,21 +5,29 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import javafx.embed.swing.SwingFXUtils;
 import org.cos.sie.popsulo.app.QueryResult;
 import org.cos.sie.popsulo.converter.FormatConverter;
 import org.cos.sie.popsulo.converter.OutputFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Karol on 2016-12-17.
  */
 public class LocalDiskCache
 {
+    private static final Logger logger = LoggerFactory.getLogger(LocalDiskCache.class);
+
     private static LocalDiskCache instance = null;
 
     private static final String ldcPATH = "./LDC";
@@ -28,11 +36,30 @@ public class LocalDiskCache
 
     private static final String urlConstPart = "https://www.youtube.com/watch?v=";
 
+    List<String> vidIDs = new ArrayList<String>();
+
     public LocalDiskCache()
     {
         File ldcDir = new File(ldcPATH);
         if (!ldcDir.exists())
             ldcDir.mkdir();
+        storeFileNamesInList();
+        System.out.println("No of videos in cache: " + vidIDs.size());
+    }
+
+    private void storeFileNamesInList()
+    {
+        File folder = new File(ldcPATH);
+        File[] listOfFiles = folder.listFiles();
+
+        for (int i = 0; i < listOfFiles.length; i++) {
+            if (listOfFiles[i].isFile()) {
+                String fileName = listOfFiles[i].getName();
+                int indexOfExtension = fileName.indexOf('.');
+                if (indexOfExtension != -1)
+                    vidIDs.add(fileName.substring(indexOfExtension));
+            }
+        }
     }
 
     public static LocalDiskCache getInstance()
@@ -46,15 +73,23 @@ public class LocalDiskCache
     public void cacheQueryResult(QueryResult queryResult)
     {
         final String videoID = queryResult.getVideoId();
-        final String pathToResultCache = ldcPATH + pathSeperator + videoID;
-
-        boolean isFileCached = saveVideo(queryResult, pathToResultCache, videoID);
-
-        if (isFileCached)
+        if (isQueryResultInCache(videoID))
             return;
-
-        convertCacheToMp3(queryResult, pathToResultCache);
+        saveVideoMiniature(queryResult);
+        saveVideo(queryResult, videoID);
+        convertCacheToMp3(queryResult, videoID);
         JsonMaker.createJsonFile(queryResult);
+    }
+
+    private void saveVideoMiniature(QueryResult queryResult) {
+        String format = "jpg";
+        String filename = ldcPATH + pathSeperator + queryResult.getVideoId() + ".jpg";
+        File file = new File(filename);
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(queryResult.getMiniature(), null), format, file);
+        } catch ( IOException exc ) {
+            logger.error("Failed to save file due to: " + exc.getMessage(), exc);
+        }
     }
 
     private void convertCacheToMp3(QueryResult queryResult, String pathToResultCache)
@@ -66,27 +101,26 @@ public class LocalDiskCache
             e.printStackTrace();
         }
         assert formatConverter != null;
-        formatConverter.convertCachedResult(pathToResultCache);
-
+        formatConverter.convertCachedResult(ldcPATH + pathSeperator + pathToResultCache);
     }
 
-    private static boolean saveVideo(QueryResult queryResult, String path, String videoID)
+    private static void saveVideo(QueryResult queryResult, String videoID)
     {
-        final String url = urlConstPart + videoID;
-        File videoFile = new File(path);
-        if (videoFile.exists()) {
-            //Video was already cached
-            return true;
-        }
         try {
-            VGet v = new VGet(new URL(url), new File(ldcPATH));
+            VGet v = new VGet(new URL(urlConstPart + videoID), new File(ldcPATH));
             v.download();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         changeNameToHash(queryResult.getTitle(), videoID);
         //Video was not cached before, we need to process it
-        return false;
+    }
+
+    public static boolean isQueryResultInCache(String videoID)
+    {
+        final String path = ldcPATH + pathSeperator + videoID;
+        File videoFile = new File(path);
+        return videoFile.exists();
     }
 
     private static void changeNameToHash(String title, String videoID)

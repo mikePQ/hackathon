@@ -5,16 +5,17 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import org.cos.sie.popsulo.LocalDiskCache;
 import org.cos.sie.popsulo.app.QueryResult;
 import org.cos.sie.popsulo.app.utils.timer.TimerService;
 import org.cos.sie.popsulo.youtubeSearch.SearchQueryService;
 import org.cos.sie.popsulo.youtubeSearch.impl.DefaultSearchQueryService;
-import org.cos.sie.popsulo.youtubeSearch.mocks.SearchQueryServiceMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,11 +41,14 @@ public class SearchPanelController {
 	private TableColumn<QueryResult, String> author;
 
 	@FXML
+	private TableColumn<QueryResult, Image> miniature;
+
+	@FXML
 	@SuppressWarnings("unused")
 	private void initialize() {
 		searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
 			if ( !Objects.equals(oldValue, newValue) ) {
-				updateQueries(newValue);
+				updateQueries();
 			}
 		});
 		logger.info("Registered listener for search box");
@@ -57,6 +61,20 @@ public class SearchPanelController {
 	private void initializeResultsGrid() {
 		title.setCellValueFactory(new PropertyValueFactory<>("title"));
 		author.setCellValueFactory(new PropertyValueFactory<>("author"));
+		miniature.setCellValueFactory(new PropertyValueFactory<>("miniature"));
+		miniature.setCellFactory(param -> new TableCell<QueryResult, Image>() {
+			@Override
+			protected void updateItem(Image item, boolean empty) {
+				if ( item != null ) {
+					ImageView imageView = new ImageView();
+					imageView.setFitHeight(50);
+					imageView.setFitHeight(50);
+					imageView.setImage(item);
+					setGraphic(imageView);
+				}
+			}
+		});
+
 		logger.info("Defined value factories ");
 
 		results.setItems(currentResults);
@@ -66,10 +84,13 @@ public class SearchPanelController {
 	@FXML
 	public void onResultClicked(MouseEvent event) {
 		logger.info("Result clicked");
-		throw new UnsupportedOperationException("This feature is not yet implemented");
+		if ( event.isPrimaryButtonDown() && event.getClickCount() == 2 ) {
+			QueryResult selectedItem = results.getSelectionModel().getSelectedItem();
+			LocalDiskCache.getInstance().cacheQueryResult(selectedItem);
+		}
 	}
 
-	private void updateQueries(String newValue) {
+	private void updateQueries() {
 		logger.info("Querying youtube requested");
 
 		TimerService.getTimerService().executeQuery(queryService,

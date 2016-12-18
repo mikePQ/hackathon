@@ -20,6 +20,8 @@
                          text="%labels.resultsTable.title"/>
             <TableColumn fx:id="author"
                          text="%labels.resultsTable.author"/>
+            <TableColumn fx:id="miniature"
+                         text="%labels.resultsTable.miniature"/>
         </columns>
     </TableView>
 </VBox>
