@@ -13,6 +13,8 @@ import javax.imageio.ImageIO;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -127,8 +129,17 @@ public class LocalDiskCache {
 		File fileRenamed = null;
 		File fileToRename = new File(ldcPATH + pathSeperator + videoID + ".mp4");
 		fileRenamed = new File(ldcPATH + pathSeperator + title + ".webm");
-		if(!fileRenamed.exists())
+		if(!fileRenamed.exists()) {
 			fileRenamed = new File(ldcPATH + pathSeperator + title + ".mp4");
+		}
+		else
+		{
+			try {
+				Files.delete(Paths.get(ldcPATH + pathSeperator + title + ".mp4"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
         fileRenamed.renameTo(fileToRename);
 	}
 
