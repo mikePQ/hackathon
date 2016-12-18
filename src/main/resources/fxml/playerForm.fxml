@@ -30,6 +30,7 @@
                         <Label fx:id="videoIdLabel" text="Video id : "/>
                         <Label fx:id="titleLabel" text="Title : "/>
                         <Label fx:id="authorLabel" text="Channel : "/>
+                        <Label fx:id="noOfViews" text="Number of views : " />
                         <Label fx:id="dateLabel" text="Date : "/>
                     </children>
                     <HBox.margin>

@@ -51,6 +51,7 @@ public class PlayerController
     @FXML private Label titleLabel;
     @FXML private Label authorLabel;
     @FXML private Label dateLabel;
+    @FXML private Label noOfViews;
     @FXML private ImageView miniatureImageView;
     @FXML private ProgressBar downloadProgressBar;
     @FXML private Slider volumeSlider;
@@ -60,6 +61,7 @@ public class PlayerController
     private String videoIdBase;
     private String authorBase;
     private String dateBase;
+    private String numberOfViews;
     private StringProperty time;
     private Duration duration;
     private MediaPlayer mediaPlayer;
@@ -73,6 +75,7 @@ public class PlayerController
         titleBase = bundle.getString("labels.player.video.title");
         authorBase = bundle.getString("labels.player.author");
         dateBase = bundle.getString("labels.player.video.date");
+        numberOfViews = bundle.getString("labels.player.video.views");
         mainPane.setVisible(false);
         downloadProgressBar.setVisible(false);
         downloadingLabel.setVisible(false);
@@ -158,6 +161,7 @@ public class PlayerController
         titleLabel.setText(titleBase + " : " + result.getTitle());
         authorLabel.setText(authorBase + " : " + result.getAuthor());
         dateLabel.setText(dateBase + " : " + result.getPublishingDate());
+        noOfViews.setText(numberOfViews + " : " + result.getNumberOfViews());
         time = new SimpleStringProperty();
         time.setValue(formatTime(mediaPlayer.getCurrentTime(), duration));
         timeLabel.textProperty().bind(time);
