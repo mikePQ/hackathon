@@ -22,7 +22,7 @@ public class FormatConverterTest
         throws Exception
     {
         FormatConverter converter = new FormatConverter();
-        URI inputUri = FormatConverterTest.class.getResource("testInput.mp4").toURI();
+        URI inputUri = FormatConverterTest.class.getResource("sEr6hfy9YTo.mp4").toURI();
         File inputFile = new File(inputUri);
         String outputFile = new File(inputFile.getParent() + "\\testOutput.mp3").getAbsolutePath();
         converter.convert(inputFile.getAbsolutePath(), outputFile, OutputFormat.MP3);
