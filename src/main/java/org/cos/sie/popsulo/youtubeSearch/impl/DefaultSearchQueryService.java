@@ -1,6 +1,7 @@
 package org.cos.sie.popsulo.youtubeSearch.impl;
 
 import com.google.api.services.youtube.model.SearchResult;
+import org.cos.sie.popsulo.LocalDiskCache;
 import org.cos.sie.popsulo.app.QueryResult;
 import org.cos.sie.popsulo.youtubeSearch.SearchQueryService;
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ public class DefaultSearchQueryService implements SearchQueryService {
 					.map(DefaultSearchQueryService::convertToQueryResult)
 					.collect(Collectors.toList());
 			results.forEach(DefaultSearchQueryService::downloadMiniatureImage);
+			results.forEach(DefaultSearchQueryService::checkAndSetIfAvailableInCache);
 			return results;
 		} catch ( IOException exc ) {
 			logger.error("Failed to call youtube service - IOException caught");
@@ -59,6 +61,12 @@ public class DefaultSearchQueryService implements SearchQueryService {
 		String miniatureUrl = queryResult.getMiniatureUrl();
 		Image image = new Image(miniatureUrl);
 		queryResult.setMiniature(image);
+	}
+
+	private static void checkAndSetIfAvailableInCache(QueryResult queryResult) {
+		String videoId = queryResult.getVideoId();
+		boolean isAvailableInCache = LocalDiskCache.getInstance().isQueryResultInCache(videoId);
+		queryResult.setCached(isAvailableInCache);
 	}
 
 }

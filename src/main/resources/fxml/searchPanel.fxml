@@ -22,6 +22,8 @@
                          text="%labels.resultsTable.author"/>
             <TableColumn fx:id="miniature"
                          text="%labels.resultsTable.miniature"/>
+            <TableColumn fx:id="isCached"
+                         text="%labels.resultsTable.isCached"/>
         </columns>
     </TableView>
 </VBox>

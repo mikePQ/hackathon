@@ -3,12 +3,12 @@ package org.cos.sie.popsulo.app.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import org.cos.sie.popsulo.LocalDiskCache;
 import org.cos.sie.popsulo.app.QueryResult;
 import org.cos.sie.popsulo.app.utils.timer.TimerService;
 import org.cos.sie.popsulo.youtubeSearch.SearchQueryService;
@@ -16,13 +16,14 @@ import org.cos.sie.popsulo.youtubeSearch.impl.DefaultSearchQueryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class SearchPanelController {
 
 	private static final Logger logger = LoggerFactory.getLogger(SearchPanelController.class);
-
 	@FXML
 	private TextField searchTextField;
 
@@ -43,7 +44,17 @@ public class SearchPanelController {
 	@FXML
 	private TableColumn<QueryResult, Image> miniature;
 
+	@FXML
+	private TableColumn<QueryResult, Boolean> isCached;
+
     private PlayerController playerController;
+
+    private static Map<Boolean, Image> cachedIcons = new HashMap<>();
+
+    static {
+    	cachedIcons.put(true, new Image(SearchPanelController.class.getResourceAsStream("/icons/is_cached_tiny.png")));
+    	cachedIcons.put(false, new Image(SearchPanelController.class.getResourceAsStream("/icons/is_not_cached_tiny.png")));
+	}
 
 	@FXML
 	@SuppressWarnings("unused")
@@ -64,6 +75,7 @@ public class SearchPanelController {
 		title.setCellValueFactory(new PropertyValueFactory<>("title"));
 		author.setCellValueFactory(new PropertyValueFactory<>("author"));
 		miniature.setCellValueFactory(new PropertyValueFactory<>("miniature"));
+		isCached.setCellValueFactory(new PropertyValueFactory<>("cached"));
 		miniature.setCellFactory(param -> new TableCell<QueryResult, Image>() {
 			@Override
 			protected void updateItem(Image item, boolean empty) {
@@ -73,6 +85,22 @@ public class SearchPanelController {
 					imageView.setFitHeight(50);
 					imageView.setImage(item);
 					setGraphic(imageView);
+				}
+			}
+		});
+		isCached.setCellFactory(param -> new TableCell<QueryResult, Boolean>() {
+			@Override
+			protected void updateItem(Boolean item, boolean empty) {
+				if ( item != null ) {
+					logger.info("boolean cached property wasn't null: " + item);
+					ImageView imageView = new ImageView();
+					imageView.setFitHeight(50);
+					imageView.setFitHeight(50);
+					imageView.setImage(cachedIcons.get(item));
+					setGraphic(imageView);
+					setAlignment(Pos.CENTER);
+				} else {
+					logger.info("boolean cached property was null");
 				}
 			}
 		});

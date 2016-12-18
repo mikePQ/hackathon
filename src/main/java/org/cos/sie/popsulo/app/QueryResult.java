@@ -25,6 +25,15 @@ public class QueryResult {
 	private String publishingDate;
 	private transient Image miniature;
 	private transient String fileUrl;
+	private transient Boolean cached;
+
+	public Boolean getCached() {
+		return cached;
+	}
+
+	public void setCached(Boolean cached) {
+		this.cached = cached;
+	}
 
 	private transient String miniatureUrl;
 
