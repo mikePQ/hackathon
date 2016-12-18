@@ -4,7 +4,6 @@ import com.github.axet.vget.VGet;
 import com.github.axet.vget.info.VGetParser;
 import com.github.axet.vget.info.VideoFileInfo;
 import com.github.axet.vget.info.VideoInfo;
-import com.github.axet.wget.info.ex.DownloadInterruptedError;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleStringProperty;
@@ -38,6 +37,9 @@ public class PlayerController
     implements Initializable
 {
     private static final Logger logger = LoggerFactory.getLogger(PlayerController.class);
+    private static final String baseUrl = "https://www.youtube.com/watch?v=";
+    private static final double PERCENTS = 100.0;
+    private static final int SECONDS_MINUTES_HOURS = 60;
 
     @FXML private VBox mainPane;
     @FXML private Label timeLabel;
@@ -68,7 +70,6 @@ public class PlayerController
 
     public void pause()
     {
-
         mediaPlayer.pause();
     }
 
@@ -105,7 +106,11 @@ public class PlayerController
 
     private void updateMediaPlayer(QueryResult result)
     {
-        Media media = new Media(result.getFileUrl());
+        String fileUrl = result.getFileUrl();
+        if (fileUrl == null) {
+            fileUrl = getStreamUrl(result.getVideoId());
+        }
+        Media media = new Media(fileUrl);
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setAutoPlay(false);
         mediaPlayer.currentTimeProperty().addListener((ChangeListener)(observable, oldValue, newValue) -> {
@@ -150,8 +155,6 @@ public class PlayerController
     {
         try {
             final AtomicBoolean stop = new AtomicBoolean(false);
-
-            String baseUrl= ""; //TODO change
             URL web = new URL(baseUrl + videoId);
             VGetParser user = VGet.parser(web);
 
@@ -208,7 +211,4 @@ public class PlayerController
             }
         }
     }
-
-    private static final double PERCENTS = 100.0;
-    private static final int SECONDS_MINUTES_HOURS = 60;
 }

@@ -12,6 +12,9 @@ public class MainController {
 	private SearchPanelController searchPanelController;
 
 	@FXML
+	private PlayerController playerController;
+
+	@FXML
 	private void initialize() {
 		logger.info("Initializing MainController...");
 	}
