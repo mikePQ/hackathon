@@ -22,6 +22,16 @@ public class QueryResult {
 	private Image miniature;
 	private String fileUrl;
 
+	private transient String miniatureUrl;
+
+	public String getMiniatureUrl() {
+		return miniatureUrl;
+	}
+
+	public void setMiniatureUrl(String miniatureUrl) {
+		this.miniatureUrl = miniatureUrl;
+	}
+
 	public String getVideoId() {
 		return videoId;
 	}
@@ -40,6 +50,10 @@ public class QueryResult {
 
 	public Image getMiniature() {
 		return miniature;
+	}
+
+	public void setMiniature(Image miniature) {
+		this.miniature = miniature;
 	}
 
 	public String getFileUrl() {
