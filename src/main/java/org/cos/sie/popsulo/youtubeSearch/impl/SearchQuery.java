@@ -95,7 +95,7 @@ public class SearchQuery
         }
 
         SearchResult singleVideoasd = iteratorSearchResults.next();
-        LocalDiskCache.getInstance().cacheQueryResult(singleVideoasd);
+        LocalDiskCache.getInstance().cacheQueryResult(DefaultSearchQueryService.convertToQueryResult(singleVideoasd));
 
         while (iteratorSearchResults.hasNext()) {
 

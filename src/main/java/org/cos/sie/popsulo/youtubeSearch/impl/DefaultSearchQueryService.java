@@ -43,7 +43,7 @@ public class DefaultSearchQueryService implements SearchQueryService {
 		}
 	}
 
-	private static QueryResult convertToQueryResult(SearchResult searchResult) {
+	public static QueryResult convertToQueryResult(SearchResult searchResult) {
 		String videoId = searchResult.getId().getVideoId();
 		String title = searchResult.getSnippet().getTitle();
 		String channel = searchResult.getSnippet().getChannelTitle();
