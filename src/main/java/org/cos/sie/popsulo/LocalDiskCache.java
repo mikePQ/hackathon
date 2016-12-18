@@ -171,6 +171,8 @@ public class LocalDiskCache {
 	public int incJsonInfo(String videoId)
 	{
 		QueryResult qResult = vidIDs.get(videoId);
+		if (qResult == null)
+			return 0;
 		qResult.incNoOfViews();
 		JsonMaker.createJsonFile(qResult);
 		return qResult.getNumberOfViews();
