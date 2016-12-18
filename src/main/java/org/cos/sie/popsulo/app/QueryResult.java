@@ -2,6 +2,7 @@ package org.cos.sie.popsulo.app;
 
 import javafx.scene.image.Image;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class QueryResult {
@@ -10,7 +11,8 @@ public class QueryResult {
 		this.videoId = videoId;
 		this.title = title;
 		this.author = author;
-		this.publishingDate = publishingDate.toString();
+		SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
+		this.publishingDate = format.format(publishingDate);
 		this.miniature = miniature;
 		this.fileUrl = fileUrl;
 	}

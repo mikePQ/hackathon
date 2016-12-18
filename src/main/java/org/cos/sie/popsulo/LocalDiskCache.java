@@ -46,14 +46,10 @@ public class LocalDiskCache
     public void cacheQueryResult(QueryResult queryResult)
     {
         final String videoID = queryResult.getVideoId();
-        final String pathToResultCache = ldcPATH + pathSeperator + videoID;
-
-        boolean isFileCached = saveVideo(queryResult, pathToResultCache, videoID);
-
-        if (isFileCached)
+        if (isQueryResultInCache(videoID))
             return;
-
-        convertCacheToMp3(queryResult, pathToResultCache);
+        saveVideo(queryResult, videoID);
+        convertCacheToMp3(queryResult, videoID);
         JsonMaker.createJsonFile(queryResult);
     }
 
@@ -66,27 +62,27 @@ public class LocalDiskCache
             e.printStackTrace();
         }
         assert formatConverter != null;
-        formatConverter.convertCachedResult(pathToResultCache);
+        formatConverter.convertCachedResult(ldcPATH + pathSeperator + pathToResultCache);
 
     }
 
-    private static boolean saveVideo(QueryResult queryResult, String path, String videoID)
+    private static void saveVideo(QueryResult queryResult, String videoID)
     {
-        final String url = urlConstPart + videoID;
-        File videoFile = new File(path);
-        if (videoFile.exists()) {
-            //Video was already cached
-            return true;
-        }
         try {
-            VGet v = new VGet(new URL(url), new File(ldcPATH));
+            VGet v = new VGet(new URL(urlConstPart + videoID), new File(ldcPATH));
             v.download();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         changeNameToHash(queryResult.getTitle(), videoID);
         //Video was not cached before, we need to process it
-        return false;
+    }
+
+    public static boolean isQueryResultInCache(String videoID)
+    {
+        final String path = ldcPATH + pathSeperator + videoID;
+        File videoFile = new File(path);
+        return videoFile.exists();
     }
 
     private static void changeNameToHash(String title, String videoID)

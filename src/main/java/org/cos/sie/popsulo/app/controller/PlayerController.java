@@ -154,12 +154,6 @@ public class PlayerController
         }
     }
 
-    private static String formatDate(Date date)
-    {
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/YYYY");
-        return format.format(date);
-    }
-
     private static String formatTime(Duration elapsed, Duration duration)
     {
         int intElapsed = (int)floor(elapsed.toSeconds());
