@@ -5,10 +5,14 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import javafx.embed.swing.SwingFXUtils;
 import org.cos.sie.popsulo.app.QueryResult;
 import org.cos.sie.popsulo.converter.FormatConverter;
 import org.cos.sie.popsulo.converter.OutputFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,6 +24,8 @@ import java.util.Date;
  */
 public class LocalDiskCache
 {
+    private static final Logger logger = LoggerFactory.getLogger(LocalDiskCache.class);
+
     private static LocalDiskCache instance = null;
 
     private static final String ldcPATH = "./LDC";
@@ -48,9 +54,21 @@ public class LocalDiskCache
         final String videoID = queryResult.getVideoId();
         if (isQueryResultInCache(videoID))
             return;
+        saveVideoMiniature(queryResult);
         saveVideo(queryResult, videoID);
         convertCacheToMp3(queryResult, videoID);
         JsonMaker.createJsonFile(queryResult);
+    }
+
+    private void saveVideoMiniature(QueryResult queryResult) {
+        String format = "jpg";
+        String filename = ldcPATH + pathSeperator + queryResult.getVideoId() + ".jpg";
+        File file = new File(filename);
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(queryResult.getMiniature(), null), format, file);
+        } catch ( IOException exc ) {
+            logger.error("Failed to save file due to: " + exc.getMessage(), exc);
+        }
     }
 
     private void convertCacheToMp3(QueryResult queryResult, String pathToResultCache)
