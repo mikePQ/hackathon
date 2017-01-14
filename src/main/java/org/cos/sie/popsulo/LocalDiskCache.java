@@ -1,14 +1,11 @@
 package org.cos.sie.popsulo;
 
 import com.github.axet.vget.VGet;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.control.ProgressBar;
-import oracle.jrockit.jfr.VMJFR;
 import org.apache.commons.io.FileUtils;
 import org.cos.sie.popsulo.app.QueryResult;
 import org.cos.sie.popsulo.converter.FormatConverter;
+import org.cos.sie.popsulo.youtubeSearch.JsonMaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,14 +13,8 @@ import javax.imageio.ImageIO;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.regex.Pattern;
 
-/**
- * Created by Karol on 2016-12-17.
- */
 public class LocalDiskCache {
 	private static final Logger logger = LoggerFactory.getLogger(LocalDiskCache.class);
 
@@ -63,7 +54,8 @@ public class LocalDiskCache {
 					if ( "mp3".equals(extension) ) {
 						String videoId = fileName.substring(0, indexOfExtension);
 						logger.info("Added file with id: " + videoId + " to cache");
-						vidIDs.put(videoId, JsonMaker.getQueryResultFromJson(videoId));
+						String videoIdPath = ldcPATH + pathSeperator + videoId;
+						vidIDs.put(videoId, JsonMaker.getQueryResultFromJson(videoIdPath));
 					}
 				}
 			}
@@ -81,14 +73,17 @@ public class LocalDiskCache {
 		final String videoID = queryResult.getVideoId();
 		if ( isQueryResultInCache(videoID) ) {
 			logger.info("Video with id: " + videoID + " found in cache");
-			JsonMaker.createJsonFile(vidIDs.get(videoID));
+			String filePath = ldcPATH + pathSeperator + queryResult.getVideoId();
+			JsonMaker.createJsonFile(vidIDs.get(videoID), filePath);
 			return;
 		}
 		saveVideoMiniature(queryResult);
 		saveVideo(queryResult, videoID);
-		addToMap(videoID, JsonMaker.getQueryResultFromJson(videoID));
+		String videoIdPath = ldcPATH + pathSeperator + videoID;
+		addToMap(videoID, JsonMaker.getQueryResultFromJson(videoIdPath));
 		convertCacheToMp3(queryResult, videoID);
-		JsonMaker.createJsonFile(queryResult);
+		String filePath = ldcPATH + pathSeperator + queryResult.getVideoId();
+		JsonMaker.createJsonFile(queryResult, filePath);
 	}
 
         public synchronized Map<String, QueryResult> getVidIDs()
@@ -137,7 +132,7 @@ public class LocalDiskCache {
 		} catch ( MalformedURLException e ) {
 			e.printStackTrace();
 		}
-		changeNameToHash(queryResult.getTitle(), videoID);
+		changeNameToHash(videoID);
 		logger.info("Download of \"" + queryResult.getTitle() + "\" done");
 		//Video was not cached before, we need to process it
 	}
@@ -148,7 +143,7 @@ public class LocalDiskCache {
 		}
 	}
 
-	private static void changeNameToHash(String title, String videoID) {
+	private static void changeNameToHash(String videoID) {
 		File ldcTempFolderFile = new File(ldcPATH + pathSeperator + videoID);
 		File fileResult = null;
 		for (final File fileEntry : ldcTempFolderFile.listFiles()) {
@@ -174,39 +169,8 @@ public class LocalDiskCache {
 		if (qResult == null)
 			return 0;
 		qResult.incNoOfViews();
-		JsonMaker.createJsonFile(qResult);
+		String filePath = ldcPATH + pathSeperator + qResult.getVideoId();
+		JsonMaker.createJsonFile(qResult, filePath);
 		return qResult.getNumberOfViews();
-	}
-
-	static class JsonMaker {
-		private final static String videoId = "videoId";
-
-		private final static String title = "title";
-
-		private final static String author = "author";
-
-		private final static String publishingDate = "publishingDate";
-
-		public static void createJsonFile(QueryResult queryResult) {
-			String filePath = ldcPATH + pathSeperator + queryResult.getVideoId();
-			try ( FileWriter writer = new FileWriter(filePath) ) {
-				Gson gson = new GsonBuilder().create();
-				gson.toJson(queryResult, writer);
-			} catch ( IOException e ) {
-				e.printStackTrace();
-			}
-		}
-
-		public static QueryResult getQueryResultFromJson(String videoID) {
-			QueryResult queryResult = null;
-			try ( Reader reader = new FileReader(ldcPATH + pathSeperator + videoID) ) {
-				Gson gson = new GsonBuilder().create();
-				queryResult = gson.fromJson(reader, QueryResult.class);
-				return queryResult;
-			} catch ( IOException e ) {
-				e.printStackTrace();
-			}
-			return queryResult;
-		}
 	}
 }
