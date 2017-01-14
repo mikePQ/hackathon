@@ -270,28 +270,4 @@ public class PlayerController
             }
         }
     }
-
-//    public void saveFile()
-//        throws MalformedURLException
-//    {
-//        if (lastQueryResult.getFileCache() != null) {
-//            return;
-//        }
-//
-//        Task<Void> cacheTask = new Task<Void>()
-//        {
-//            @Override protected Void call()
-//                throws Exception
-//            {
-//                LocalDiskCache.getInstance().cacheQueryResult(lastQueryResult);
-//                return null;
-//            }
-//        };
-//        ProgressDialog progressDialog = new ProgressDialog(cacheTask);
-//        new Thread(cacheTask).start();
-//        ResourceBundle bundle = ResourceUtils.loadLabelsForDefaultLocale();
-//        progressDialog.setTitle(bundle.getString("labels.caching.video"));
-//        progressDialog.setHeaderText(bundle.getString("labels.caching.inprogress"));
-//        progressDialog.initOwner(mainPane.getScene().getWindow());
-//    }
 }

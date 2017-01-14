@@ -1,6 +1,7 @@
 package org.cos.sie.popsulo.app.utils;
 
-import org.cos.sie.popsulo.app.utils.resource.UTF8ResourcesControl;
+import org.cos.sie.popsulo.app.utils.resource.Encoding;
+import org.cos.sie.popsulo.app.utils.resource.ResourceControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,16 +17,7 @@ public class ResourceUtils {
 	private static final Logger logger = LoggerFactory.getLogger(ResourceUtils.class);
 	private static final String PROPERTIES_FILENAME = "Key.properties";
 
-	private static ResourceUtils instance;
-
 	private ResourceBundle messageResources;
-
-	public static ResourceUtils getInstance() {
-		if ( instance == null ) {
-			instance = new ResourceUtils();
-		}
-		return instance;
-	}
 
 	private ResourceUtils() {
 		messageResources = loadLabelsForDefaultLocale();
@@ -34,7 +26,7 @@ public class ResourceUtils {
 	public static ResourceBundle loadLabelsForDefaultLocale() {
 		Locale defaultLocale = Locale.forLanguageTag("pl-PL");
 		try {
-			return ResourceBundle.getBundle("messages.Message", defaultLocale, new UTF8ResourcesControl());
+			return ResourceBundle.getBundle("messages.Message", defaultLocale, new ResourceControl(Encoding.UTF8));
 		} catch ( MissingResourceException exc ) {
 			throw new IllegalStateException("Could not load resource bundle");
 		}
