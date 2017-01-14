@@ -1,5 +1,3 @@
 # hackathon
-Nieznana jeszcze bliżej aplikacja mająca powstać w trakcie hackathonu BAIT 2016
 
-Rurrurukowce
-
+Aplikacja do słuchania muzyki z youtube z obsługą cache piosenek. Powstała w trakcie Hackathonu BAIT 2016 (17-18 grudnia)
