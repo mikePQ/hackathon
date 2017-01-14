@@ -8,7 +8,6 @@ import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -141,13 +140,9 @@ public class PlayerController
 
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setAutoPlay(false);
-        mediaPlayer.currentTimeProperty().addListener((ChangeListener)(observable, oldValue, newValue) -> {
-            updateProgress();
-        });
+        mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> updateProgress());
 
-        mediaPlayer.currentTimeProperty().addListener((Observable ob) -> {
-            updateProgress();
-        });
+        mediaPlayer.currentTimeProperty().addListener((Observable ob) -> updateProgress());
 
         mediaPlayer.setOnReady(() -> {
             duration = mediaPlayer.getMedia().getDuration();
