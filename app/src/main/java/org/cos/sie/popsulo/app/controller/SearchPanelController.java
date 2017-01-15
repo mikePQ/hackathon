@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+
+// TODO: [jgolda] migrate to javafx.stage.popup
 public class SearchPanelController {
 
 	private static final Logger logger = LoggerFactory.getLogger(SearchPanelController.class);

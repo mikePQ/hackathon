@@ -6,7 +6,12 @@
 
     <groupId>org.cos.sie.popsulo</groupId>
     <artifactId>hackathon</artifactId>
+    <packaging>pom</packaging>
     <version>0.1-SNAPSHOT</version>
+
+    <modules>
+        <module>app</module>
+    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,16 +27,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
         </dependency>
 
         <dependency>
@@ -57,25 +52,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons.lang.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.axet</groupId>
-            <artifactId>vget</artifactId>
-            <version>1.2.4</version>
-        </dependency>
-
-        <!-- ffmpeg java wrapper -->
-        <dependency>
-            <groupId>net.bramp.ffmpeg</groupId>
-            <artifactId>ffmpeg</artifactId>
-            <version>0.6.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-youtube</artifactId>
-            <version>v3-rev181-1.22.0</version>
         </dependency>
     </dependencies>
 
@@ -108,32 +84,6 @@
                         <version>${junit.platform.version}</version>
                     </dependency>
                 </dependencies>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <!--<mainClass>org.jboss.weld.environment.se.StartMain</mainClass>-->
-                            <mainClass>org.cos.sie.popsulo.app.StartupClass</mainClass>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>assemble-jar</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
