@@ -19,14 +19,16 @@ public class QueryResult {
 		this.miniature = miniature;
 		this.fileUrl = fileUrl;
 	}
-	public QueryResult(){
-   };
+
+	public QueryResult() {
+	}
+	
 
 	private String videoId;
 	private String title;
 	private String author;
 	private String publishingDate;
-    private String miniatureUrl;
+	private String miniatureUrl;
 	private int numberOfViews;
 	private transient Image miniature;
 	private transient String fileUrl;
@@ -81,19 +83,17 @@ public class QueryResult {
 	}
 
 	public String getFileCache()
-		throws MalformedURLException
-	{
-		if (LocalDiskCache.getInstance().isQueryResultInCache(videoId)) {
-			    numberOfViews = LocalDiskCache.getInstance().incJsonInfo(videoId);
-				File file = new File(LocalDiskCache.ldcPATH + "/" + videoId + ".mp3");
-			    return file.toURI().toURL().toString();
+			throws MalformedURLException {
+		if ( LocalDiskCache.getInstance().isQueryResultInCache(videoId) ) {
+			numberOfViews = LocalDiskCache.getInstance().incJsonInfo(videoId);
+			File file = new File(LocalDiskCache.ldcPATH + "/" + videoId + ".mp3");
+			return file.toURI().toURL().toString();
 		}
 		return null;
 	}
 
-    public void initCachedState()
-    {
-        miniature = new Image(miniatureUrl);
-        cached = true;
-    }
+	public void initCachedState() {
+		miniature = new Image(miniatureUrl);
+		cached = true;
+	}
 }
