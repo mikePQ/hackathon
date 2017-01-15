@@ -12,7 +12,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import org.cos.sie.popsulo.app.QueryResult;
-import org.cos.sie.popsulo.app.utils.ResourceUtils;
 import org.cos.sie.popsulo.youtubeSearch.SearchQueryService;
 import org.cos.sie.popsulo.youtubeSearch.impl.DefaultSearchQueryService;
 import org.cos.sie.popsulo.youtubeSearch.impl.LocalSearchQueryService;
@@ -73,8 +72,6 @@ public class SearchPanelController {
 		logger.info("Registered listener for search box");
 
 		queryService = new DefaultSearchQueryService();
-        ResourceBundle bundle = ResourceUtils.loadLabelsForDefaultLocale();
-        onlyLocalCheckBox.setText(bundle.getString("labels.search.only.local"));
         onlyLocalCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (onlyLocalCheckBox.isSelected()) {
                 if (queryService instanceof DefaultSearchQueryService) {
@@ -168,7 +165,7 @@ public class SearchPanelController {
 		currentResults.addAll(FXCollections.observableList(results));
 	}
 
-    public void setPlayerController(PlayerController playerController) {
+    void setPlayerController(PlayerController playerController) {
         this.playerController = playerController;
     }
 }
