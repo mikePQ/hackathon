@@ -2,16 +2,17 @@ package org.cos.sie.popsulo.app.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import org.cos.sie.popsulo.app.QueryResult;
 import org.cos.sie.popsulo.app.utils.ResourceUtils;
-import org.cos.sie.popsulo.app.utils.timer.TimerService;
 import org.cos.sie.popsulo.youtubeSearch.SearchQueryService;
 import org.cos.sie.popsulo.youtubeSearch.impl.DefaultSearchQueryService;
 import org.cos.sie.popsulo.youtubeSearch.impl.LocalSearchQueryService;
@@ -25,6 +26,7 @@ import java.util.*;
 public class SearchPanelController {
 
 	private static final Logger logger = LoggerFactory.getLogger(SearchPanelController.class);
+
 	@FXML
 	private TextField searchTextField;
 
@@ -63,8 +65,8 @@ public class SearchPanelController {
 	@FXML
 	@SuppressWarnings("unused")
 	private void initialize() {
-		searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-			if ( !Objects.equals(oldValue, newValue) ) {
+		searchTextField.setOnKeyPressed(event -> {
+			if ( KeyCode.ENTER.equals(event.getCode())) {
 				updateQueries();
 			}
 		});
@@ -113,15 +115,12 @@ public class SearchPanelController {
 			@Override
 			protected void updateItem(Boolean item, boolean empty) {
 				if ( item != null ) {
-					logger.info("boolean cached property wasn't null: " + item);
 					ImageView imageView = new ImageView();
 					imageView.setFitHeight(50);
 					imageView.setFitHeight(50);
 					imageView.setImage(cachedIcons.get(item));
 					setGraphic(imageView);
 					setAlignment(Pos.CENTER);
-				} else {
-					logger.info("boolean cached property was null");
 				}
 			}
 		});
@@ -145,12 +144,22 @@ public class SearchPanelController {
 
 	private void updateQueries() {
 		logger.info("Querying youtube requested");
+		String query = searchTextField.getText();
 
-		TimerService.getTimerService().executeQuery(queryService,
-				() -> searchTextField.getText(),
-				this::updateResultList,
-				() -> new Alert(Alert.AlertType.ERROR, "Failed to contact youtube", ButtonType.OK).showAndWait());
+		List<QueryResult> queryResults = new ArrayList<>();
+		Task queryTask = new Task() {
+			@Override
+			protected Object call() throws Exception {
+				queryResults.addAll(queryService.queryYoutube(query));
+				return null;
+			}
+		};
 
+		queryTask.setOnSucceeded(event -> updateResultList(queryResults));
+
+		Thread asynchRequest = new Thread(queryTask);
+		asynchRequest.setDaemon(true);
+		asynchRequest.start();
 	}
 
 	private void updateResultList(List<QueryResult> results) {
