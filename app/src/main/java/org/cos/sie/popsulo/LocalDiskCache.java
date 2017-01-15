@@ -26,7 +26,7 @@ public class LocalDiskCache {
 
 	private static final String urlConstPart = "https://www.youtube.com/watch?v=";
 
-	private Map<String, QueryResult> vidIDs = new HashMap<String, QueryResult>();
+	private Map<String, QueryResult> vidIDs = new HashMap<>();
 
 	private final Object mutex = new Object();
 
@@ -81,7 +81,7 @@ public class LocalDiskCache {
 		saveVideo(queryResult, videoID);
 		String videoIdPath = ldcPATH + pathSeperator + videoID;
 		addToMap(videoID, JsonMaker.getQueryResultFromJson(videoIdPath));
-		convertCacheToMp3(queryResult, videoID);
+		convertCacheToMp3(videoID);
 		String filePath = ldcPATH + pathSeperator + queryResult.getVideoId();
 		JsonMaker.createJsonFile(queryResult, filePath);
 	}
@@ -110,7 +110,7 @@ public class LocalDiskCache {
 		}
 	}
 
-	private void convertCacheToMp3(QueryResult queryResult, String pathToResultCache) {
+	private void convertCacheToMp3(String pathToResultCache) {
 		FormatConverter formatConverter = null;
 		try {
 			formatConverter = new FormatConverter();
