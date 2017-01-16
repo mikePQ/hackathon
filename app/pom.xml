@@ -41,6 +41,13 @@
             <artifactId>google-api-services-youtube</artifactId>
             <version>v3-rev181-1.22.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.cos.sie.popsulo</groupId>
+            <artifactId>youtube</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>
