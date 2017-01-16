@@ -5,7 +5,6 @@ import org.cos.sie.popsulo.app.utils.resource.stream.DirectStreamCreator;
 import org.cos.sie.popsulo.app.utils.resource.stream.StreamCreator;
 import org.cos.sie.popsulo.app.utils.resource.stream.URLStreamCreator;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,7 +16,7 @@ public class ResourceControl extends ResourceBundle.Control {
 
 	private Encoding resourceEncoding;
 
-	public ResourceControl(@Nonnull Encoding encoding) {
+	public ResourceControl(Encoding encoding) {
 		this.resourceEncoding = encoding;
 	}
 

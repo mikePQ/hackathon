@@ -65,7 +65,6 @@ public class PlayerController
     private Duration duration;
     private MediaPlayer mediaPlayer;
     private QueryResult lastQueryResult;
-    private String lastUrl;
 
     @Override public void initialize(URL location, ResourceBundle resources)
     {
@@ -131,8 +130,8 @@ public class PlayerController
         throws MalformedURLException
     {
         lastQueryResult = result;
-        lastUrl = result.getFileCache();
-        if (lastUrl == null) {
+        String lastUrl = result.getFileCache();
+        if ( lastUrl == null) {
                 lastUrl = getStreamUrl(result);
         }
         System.out.println(lastUrl);
