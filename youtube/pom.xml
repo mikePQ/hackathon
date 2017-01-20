@@ -11,5 +11,21 @@
 
     <artifactId>youtube</artifactId>
 
+    <properties>
+        <jersey.client.version>2.25</jersey.client.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${jersey.client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>${jersey.client.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
