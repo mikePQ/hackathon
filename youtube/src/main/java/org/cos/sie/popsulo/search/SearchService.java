@@ -1,9 +1,11 @@
 package org.cos.sie.popsulo.search;
 
 
-import org.cos.sie.popsulo.search.dto.SearchResult;
+import org.cos.sie.popsulo.search.dto.VideoInfo;
+
+import java.util.List;
 
 public interface SearchService {
 
-	SearchResult searchYoutube(String query);
+	List<VideoInfo> searchYoutube(String query);
 }
