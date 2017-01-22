@@ -4,17 +4,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import org.cos.sie.popsulo.app.QueryResult;
-import org.cos.sie.popsulo.youtubeSearch.SearchQueryService;
-import org.cos.sie.popsulo.youtubeSearch.impl.DefaultSearchQueryService;
-import org.cos.sie.popsulo.youtubeSearch.impl.LocalSearchQueryService;
+import org.cos.sie.popsulo.search.SearchService;
+import org.cos.sie.popsulo.search.dto.VideoResult;
+import org.cos.sie.popsulo.search.impl.YoutubeSearchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,74 +27,58 @@ public class SearchPanelController {
 	@FXML
 	private TextField searchTextField;
 
-	private SearchQueryService queryService;
+	private SearchService queryService;
 
 	@FXML
-	private TableView<QueryResult> results;
+	private TableView<VideoResult> results;
 
 	@FXML
-	private ObservableList<QueryResult> currentResults = FXCollections.observableArrayList();
+	private ObservableList<VideoResult> currentResults = FXCollections.observableArrayList();
 
 	@FXML
-	private TableColumn<QueryResult, String> title;
+	private TableColumn<VideoResult, String> title;
 
 	@FXML
-	private TableColumn<QueryResult, String> author;
+	private TableColumn<VideoResult, String> author;
 
 	@FXML
-	private TableColumn<QueryResult, Image> miniature;
+	private TableColumn<VideoResult, Image> miniature;
 
 	@FXML
-	private TableColumn<QueryResult, Boolean> isCached;
+	private TableColumn<VideoResult, Boolean> isCached;
 
-    @FXML
-    private CheckBox onlyLocalCheckBox;
+	@FXML
+	private CheckBox onlyLocalCheckBox;
 
-    private PlayerController playerController;
+	private PlayerController playerController;
 
-    private static Map<Boolean, Image> cachedIcons = new HashMap<>();
+	private final static Map<Boolean, Image> cachedIcons = new HashMap<>();
 
-    static {
-    	cachedIcons.put(true, new Image(SearchPanelController.class.getResourceAsStream("/icons/is_cached_tiny.png")));
-    	cachedIcons.put(false, new Image(SearchPanelController.class.getResourceAsStream("/icons/is_not_cached_tiny.png")));
+	static {
+		cachedIcons.put(true, new Image(SearchPanelController.class.getResourceAsStream("/icons/is_cached_tiny.png")));
+		cachedIcons.put(false, new Image(SearchPanelController.class.getResourceAsStream("/icons/is_not_cached_tiny.png")));
 	}
 
 	@FXML
 	@SuppressWarnings("unused")
 	private void initialize() {
 		searchTextField.setOnKeyPressed(event -> {
-			if ( KeyCode.ENTER.equals(event.getCode())) {
+			if ( KeyCode.ENTER.equals(event.getCode()) ) {
 				updateQueries();
 			}
 		});
 		logger.info("Registered listener for search box");
 
-		queryService = new DefaultSearchQueryService();
-        onlyLocalCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (onlyLocalCheckBox.isSelected()) {
-                if (queryService instanceof DefaultSearchQueryService) {
-                    queryService = new LocalSearchQueryService();
-                    currentResults.clear();
-                    initializeResultsGrid();
-                }
-            } else {
-                if (queryService instanceof LocalSearchQueryService) {
-                    queryService = new DefaultSearchQueryService();
-                    currentResults.clear();
-                    initializeResultsGrid();
-                }
-            }
-        });
-
-        initializeResultsGrid();
-    }
+		queryService = new YoutubeSearchService();
+		initializeResultsGrid();
+	}
 
 	private void initializeResultsGrid() {
 		title.setCellValueFactory(new PropertyValueFactory<>("title"));
 		author.setCellValueFactory(new PropertyValueFactory<>("author"));
 		miniature.setCellValueFactory(new PropertyValueFactory<>("miniature"));
 		isCached.setCellValueFactory(new PropertyValueFactory<>("cached"));
-		miniature.setCellFactory(param -> new TableCell<QueryResult, Image>() {
+		miniature.setCellFactory(param -> new TableCell<VideoResult, Image>() {
 			@Override
 			protected void updateItem(Image item, boolean empty) {
 				if ( item != null ) {
@@ -108,17 +90,24 @@ public class SearchPanelController {
 				}
 			}
 		});
-		isCached.setCellFactory(param -> new TableCell<QueryResult, Boolean>() {
+		isCached.setCellFactory(param -> new TableCell<VideoResult, Boolean>() {
 			@Override
-			protected void updateItem(Boolean item, boolean empty) {
-				if ( item != null ) {
-					ImageView imageView = new ImageView();
-					imageView.setFitHeight(50);
-					imageView.setFitHeight(50);
-					imageView.setImage(cachedIcons.get(item));
-					setGraphic(imageView);
-					setAlignment(Pos.CENTER);
+			protected void updateItem(Boolean isCached, boolean empty) {
+				if ( isCached != null ) {
+					if ( isCached ) {
+						setText("cached");
+					} else {
+						setText("not cached");
+					}
 				}
+//				if ( isCached != null ) {
+//					ImageView imageView = new ImageView();
+//					imageView.setFitHeight(50);
+//					imageView.setFitHeight(50);
+//					imageView.setImage(cachedIcons.get(isCached));
+//					setGraphic(imageView);
+//					setAlignment(Pos.CENTER);
+//				}
 			}
 		});
 
@@ -131,11 +120,9 @@ public class SearchPanelController {
 	@FXML
 	public void onResultClicked(MouseEvent event) {
 		logger.info("Result clicked");
-		if ( event.isPrimaryButtonDown() && event.getClickCount() == 2 ) {
-			QueryResult selectedItem = results.getSelectionModel().getSelectedItem();
-            if (playerController != null) {
-                playerController.updateState(selectedItem);
-            }
+		if ( event.getClickCount() == 2 ) {
+			VideoResult selectedItem = results.getSelectionModel().getSelectedItem();
+			playerController.updateState(selectedItem);
 		}
 	}
 
@@ -143,11 +130,11 @@ public class SearchPanelController {
 		logger.info("Querying youtube requested");
 		String query = searchTextField.getText();
 
-		List<QueryResult> queryResults = new ArrayList<>();
+		List<VideoResult> queryResults = new ArrayList<>();
 		Task queryTask = new Task() {
 			@Override
 			protected Object call() throws Exception {
-				queryResults.addAll(queryService.queryYoutube(query));
+				queryResults.addAll(queryService.searchYoutube(query));
 				return null;
 			}
 		};
@@ -159,13 +146,13 @@ public class SearchPanelController {
 		asynchRequest.start();
 	}
 
-	private void updateResultList(List<QueryResult> results) {
+	private void updateResultList(List<VideoResult> results) {
 		currentResults.clear();
 		logger.debug("Query succeded");
 		currentResults.addAll(FXCollections.observableList(results));
 	}
 
-    void setPlayerController(PlayerController playerController) {
-        this.playerController = playerController;
-    }
+	void setPlayerController(PlayerController playerController) {
+		this.playerController = playerController;
+	}
 }

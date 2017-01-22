@@ -5,7 +5,7 @@ import org.cos.sie.popsulo.search.SearchService;
 import org.cos.sie.popsulo.search.dto.SearchResult;
 import org.cos.sie.popsulo.search.dto.Thumbnail;
 import org.cos.sie.popsulo.search.dto.Thumbnails;
-import org.cos.sie.popsulo.search.dto.VideoInfo;
+import org.cos.sie.popsulo.search.dto.VideoResult;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ public class YoutubeSearchService implements SearchService {
 	private Client wsClient;
 
 	@Override
-	public List<VideoInfo> searchYoutube(String query) {
+	public List<VideoResult> searchYoutube(String query) {
 		logger.info("Requested query for: " + query);
 		WebTarget webTarget = wsClient.target(BASE_RESOURCE_NAME).path(PATH);
 
@@ -50,7 +50,7 @@ public class YoutubeSearchService implements SearchService {
 		SearchResult result = response.readEntity(SearchResult.class);
 		downloadThumbnails(result);
 
-		List<VideoInfo> items = result.getItems();
+		List<VideoResult> items = result.getItems();
 
 		logger.info("Returned " + items.size() + " elements");
 		return items;
@@ -58,14 +58,14 @@ public class YoutubeSearchService implements SearchService {
 
 
 	private void downloadThumbnails(SearchResult searches) {
-		List<VideoInfo> videos = searches.getItems();
+		List<VideoResult> videos = searches.getItems();
 
-		for ( VideoInfo video : videos ) {
+		for ( VideoResult video : videos ) {
 			fillThumbnails(video);
 		}
 	}
 
-	private void fillThumbnails(VideoInfo video) {
+	private void fillThumbnails(VideoResult video) {
 		Thumbnails thumbnails = video.getSnippet().getThumbnails();
 		downloadThumbnail(thumbnails.getDefaultThumbnail());
 		downloadThumbnail(thumbnails.getMedium());

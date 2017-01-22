@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
@@ -10,65 +8,53 @@
 <VBox fx:id="mainPane" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
       minWidth="-Infinity" prefHeight="350.0" prefWidth="600.0" spacing="5.0" xmlns="http://javafx.com/javafx/8"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.cos.sie.popsulo.app.controller.PlayerController">
-    <children>
-        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-            <children>
-                <ImageView fx:id="miniatureImageView" fitHeight="200.0" fitWidth="300.0" pickOnBounds="true"
-                           preserveRatio="true">
-                    <HBox.margin>
-                        <Insets left="20.0"/>
-                    </HBox.margin>
+    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+        <VBox.margin>
+            <Insets top="20.0"/>
+        </VBox.margin>
+        <ImageView fx:id="miniatureImageView" fitHeight="200.0" fitWidth="300.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <HBox.margin>
+                <Insets left="20.0"/>
+            </HBox.margin>
+        </ImageView>
+        <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="300.0" spacing="5.0">
+            <HBox.margin>
+                <Insets left="20.0"/>
+            </HBox.margin>
+            <Label fx:id="downloadingLabel"/>
+            <ProgressBar fx:id="downloadProgressBar" prefHeight="35.0" prefWidth="238.0" progress="0.0">
+                <VBox.margin>
+                    <Insets bottom="20.0"/>
+                </VBox.margin>
+            </ProgressBar>
+            <Label fx:id="videoIdLabel" text="Video id : "/>
+            <Label fx:id="titleLabel" text="Title : "/>
+            <Label fx:id="authorLabel" text="Channel : "/>
+            <Label fx:id="noOfViews" text="Number of views : "/>
+            <Label fx:id="dateLabel" text="Date : "/>
+        </VBox>
+    </HBox>
+    <HBox alignment="CENTER" spacing="5.0">
+        <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        </padding>
+        <Button alignment="CENTER" mnemonicParsing="false" onAction="#play">
+            <graphic>
+                <ImageView>
+                    <Image url="/icons/play.png"/>
                 </ImageView>
-                <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="300.0" spacing="5.0">
-                    <children>
-                        <Label fx:id="downloadingLabel"/>
-                        <ProgressBar fx:id="downloadProgressBar" prefHeight="35.0" prefWidth="238.0" progress="0.0">
-                            <VBox.margin>
-                                <Insets bottom="20.0"/>
-                            </VBox.margin>
-                        </ProgressBar>
-                        <Label fx:id="videoIdLabel" text="Video id : "/>
-                        <Label fx:id="titleLabel" text="Title : "/>
-                        <Label fx:id="authorLabel" text="Channel : "/>
-                        <Label fx:id="noOfViews" text="Number of views : " />
-                        <Label fx:id="dateLabel" text="Date : "/>
-                    </children>
-                    <HBox.margin>
-                        <Insets left="20.0"/>
-                    </HBox.margin>
-                </VBox>
-            </children>
-            <VBox.margin>
-                <Insets top="20.0"/>
-            </VBox.margin>
-        </HBox>
-        <HBox alignment="CENTER" spacing="5.0">
-            <children>
-                <Button fx:id="playButton" alignment="CENTER" mnemonicParsing="false" onAction="#play">
-                    <graphic>
-                        <ImageView>
-                            <image>
-                                <Image url="/icons/play.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                </Button>
-                <Button fx:id="pauseButton" alignment="CENTER" mnemonicParsing="false" onAction="#pause">
-                    <graphic>
-                        <ImageView>
-                            <image>
-                                <Image url="/icons/pause.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                </Button>
-                <Slider fx:id="volumeSlider" maxWidth="80.0" prefWidth="80.0"/>
-                <Slider fx:id="slider" minWidth="300.0" prefWidth="500.0"/>
-                <Label fx:id="timeLabel" minWidth="80.0"/>
-            </children>
-            <padding>
-                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-            </padding>
-        </HBox>
-    </children>
+            </graphic>
+        </Button>
+        <Button alignment="CENTER" mnemonicParsing="false" onAction="#pause">
+            <graphic>
+                <ImageView>
+                    <Image url="/icons/pause.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Slider fx:id="volumeSlider" maxWidth="80.0" prefWidth="80.0"/>
+        <Slider fx:id="slider" minWidth="300.0" prefWidth="500.0"/>
+        <Label fx:id="timeLabel" minWidth="80.0"/>
+    </HBox>
 </VBox>

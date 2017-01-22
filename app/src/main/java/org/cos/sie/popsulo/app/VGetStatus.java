@@ -1,13 +1,13 @@
 package org.cos.sie.popsulo.app;
 
-import com.github.axet.vget.info.VideoFileInfo;
-import com.github.axet.vget.info.VideoInfo;
-import com.github.axet.vget.vhs.VimeoInfo;
-import com.github.axet.vget.vhs.YouTubeInfo;
 import com.github.axet.wget.SpeedInfo;
 import com.github.axet.wget.info.DownloadInfo;
 import com.github.axet.wget.info.DownloadInfo.Part;
 import com.github.axet.wget.info.DownloadInfo.Part.States;
+import org.cos.sie.popsulo.download.VideoFileInfo;
+import org.cos.sie.popsulo.download.VideoInfo;
+import org.cos.sie.popsulo.download.VimeoInfo;
+import org.cos.sie.popsulo.download.YouTubeInfo;
 
 import java.util.HashMap;
 import java.util.List;
@@ -48,10 +48,10 @@ public class VGetStatus
             case EXTRACTING:
             case EXTRACTING_DONE:
             case DONE:
-                if (videoinfo instanceof YouTubeInfo) {
+                if (videoinfo instanceof YouTubeInfo ) {
                     YouTubeInfo i = (YouTubeInfo)videoinfo;
                     System.out.println(videoinfo.getState() + " " + i.getVideoQuality());
-                } else if (videoinfo instanceof VimeoInfo) {
+                } else if (videoinfo instanceof VimeoInfo ) {
                     VimeoInfo i = (VimeoInfo)videoinfo;
                     System.out.println(videoinfo.getState() + " " + i.getVideoQuality());
                 } else {

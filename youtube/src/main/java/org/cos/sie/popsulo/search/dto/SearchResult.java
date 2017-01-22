@@ -9,7 +9,7 @@ public class SearchResult {
 	private String regionCode;
 	private PageInfo pageInfo;
 
-	private List<VideoInfo> items;
+	private List<VideoResult> items;
 
 	public String getKind() {
 		return kind;
@@ -31,7 +31,7 @@ public class SearchResult {
 		return pageInfo;
 	}
 
-	public List<VideoInfo> getItems() {
+	public List<VideoResult> getItems() {
 		return items;
 	}
 }
